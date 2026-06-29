@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+    
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <img src="assets/trophy.png" class="currency-icon header" alt="трофей"/>
+        <span id="score">0</span>
+    </header>
+    <img src="assets/clicker-coin.png" alt="Монета Brawl Stars" id="coin">
+
+    <!-- Панель магазина -->
+    <div id="shop-panel">
+        <h2>🏪 Магазин</h2>
+        
+        <div class="shop-item">
+            <span class="item-name">
+                <img src="assets/power-cube.png" class="item-icon" alt="power" />
+                Куб усиления
+            </span>
+            <span class="item-effect">+1 трофей/сек</span>
+            <button class="buy-btn" data-item="autoclick" data-price="20">
+                <img src="assets/trophy.png" class="currency-icon" alt="трофей" /> 20
+            </button>
+        </div>
+        
+        <div class="shop-item">
+            <span class="item-name">Курсор</span>
+            <span class="item-effect">+1 за клик</span>
+            <button class="buy-btn" data-item="cursor" data-price="100">
+                <img src="assets/trophy.png" class="currency-icon" alt="трофей" /> 100
+            </button>
+        </div>
+    </div>
+
+    <audio id="bg-music" loop hidden>
+        <source src="assets/bg-sounds/standart-menu.mp3" type="">
+        <source src="assets/bg-sounds/lunar-new-year.mp3" type="">
+        <source src="assets/bg-sounds/mecha-menu.mp3" type="">
+    </audio>
+
+    <audio src="assets/Звук монет в Brawl Stars.mp3" id="coin-sound"></audio>
+</body>
+</html>
