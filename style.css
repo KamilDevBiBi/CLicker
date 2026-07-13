@@ -20,6 +20,8 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 body {
@@ -666,7 +668,7 @@ header {
     box-shadow: 0 1px 0 #d68f9e;
 }
 
-#buy-brawler:disabled {
+#buy-brawler.disabled {
     opacity: 0.5;
     transform: translateY(2px);
     box-shadow: 0 2px 0 #d68f9e;

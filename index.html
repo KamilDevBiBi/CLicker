@@ -36,7 +36,7 @@
 
     <div id="boxes-row" class="section">
         <div id="megabox-card">
-            <img src="assets/MegaBox.png" alt="megabox" class="megabox-img">
+            <img src="assets/megabox.png" alt="megabox" class="megabox-img">
             <span class="box-label">Мегабокс</span>
         </div>
     </div>
@@ -163,54 +163,64 @@
         </button>
 
         <div id="brawlers-catalog">
-            <div class="brawler-card">
+            <!-- Шелли -->
+            <div class="brawler-card" data-name="shelly">
                 <div class="brawler-front">
                     <img src="assets/portraits/shelly_portrait.png" alt="" class="brawler-img" draggable="false">
                     <span class="brawler-stat">Shelly</span>
                 </div>
                 <div class="brawler-back">
-                    <span>1.25 Множитель</span>
+                    <span>Каждый 10-й клик:<br><b>+10 к силе</b></span>
                 </div>
             </div>
-            <div class="brawler-card">
+            
+            <!-- Эль Примо -->
+            <div class="brawler-card" data-name="el-primo">
                 <div class="brawler-front">
                     <img src="assets/portraits/el-primo_portrait.png" alt="" class="brawler-img" draggable="false">
                     <span class="brawler-stat">El Primo</span>
                 </div>
                 <div class="brawler-back">
-                    <span>1.25 Множитель</span>
-                </div>                
+                    <span>Скорость уровня:<br><b>Удвоена (x2)</b></span>
+                </div>
             </div>
-            <div class="brawler-card">
+            
+            <!-- Биби -->
+            <div class="brawler-card" data-name="bibi">
                 <div class="brawler-front">
                     <img src="assets/portraits/bibi_portrait.png" alt="" class="brawler-img" draggable="false">
                     <span class="brawler-stat">Bibi</span>
                 </div>
                 <div class="brawler-back">
-                    <span>1.25 Множитель</span>
-                </div>   
+                    <span>Шанс 15% на:<br><b>Крит клик (x5)</b></span>
+                </div>
             </div>
-            <div class="brawler-card">
+            
+            <!-- Мортис -->
+            <div class="brawler-card" data-name="mortis">
                 <div class="brawler-front">
                     <img src="assets/portraits/mortis_portrait.png" alt="" class="brawler-img" draggable="false">
                     <span class="brawler-stat">Mortis</span>
                 </div>
                 <div class="brawler-back">
-                    <span>1.25 Множитель</span>
-                </div>   
+                    <span>Кэшбек в магазине:<br><b>Возврат 10%</b></span>
+                </div>
             </div>
-            <div class="brawler-card">
+            
+            <!-- Леон -->
+            <div class="brawler-card" data-name="leon">
                 <div class="brawler-front">
                     <img src="assets/portraits/leon_portrait.png" alt="" class="brawler-img" draggable="false">
                     <span class="brawler-stat">Leon</span>
                 </div>
                 <div class="brawler-back">
-                    <span>1.25 Множитель</span>
-                </div>   
+                    <span>Скорость автоклика:<br><b>Раз в 0.5 сек!</b></span>
+                </div>
             </div>
         </div>
 
-        <button id="buy-brawler" data-item="megabox">1000 <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /></button>
+
+        <button id="buy-brawler" data-price="1000">1000 <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /></button>
     </div>
 
     <div id="megabox-unlocking">

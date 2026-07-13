@@ -84,8 +84,7 @@ function loadGame() {
         try {
             // Превращаем строку обратно в объект
             playerProgress = JSON.parse(savedData);
-            // playerProgress.totalClicks = 0
-            
+
             trophyCount.textContent = playerProgress.score;
             if (playerProgress.autoclick > 0){
                 timer = 1000
@@ -230,7 +229,6 @@ shopItems.forEach((item, index)  => {
             saveGame();
         }
 
-
         const itemData = this.dataset.item;
         const price = parseInt(this.dataset.price);
 
@@ -356,6 +354,11 @@ megaboxCard.addEventListener('click', function(){
     document.body.style.overflow = 'hidden'; // запрещаем скролл страницы
 
     playSound("menu_click");
+    if (parseInt(brawlerBtn.dataset.price) > playerProgress.score){
+        brawlerBtn.classList.add("disabled")
+    } else if (brawlerBtn.classList.contains("disabled")) {
+        brawlerBtn.classList.remove("disabled")
+    }
 });
 
 // Функция закрытия модального окна
@@ -395,7 +398,11 @@ brawlerCards.forEach(card => {
 // Открытие мегаящика
 const megaboxUnlocking = document.getElementById("megabox-unlocking");
 brawlerBtn.addEventListener('click', function(e){
+    if (parseInt(brawlerBtn.dataset.price) > playerProgress.score){return; }
     megaboxUnlocking.classList.add("active");
+    playSound("buy");
+
+    addTrophy(-1 * parseInt(brawlerBtn.dataset.price) )
 });
 
 const megaboxImg = megaboxUnlocking.querySelector(".megabox-img");
