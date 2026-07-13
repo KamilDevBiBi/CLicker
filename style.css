@@ -1,5 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap');
+@font-face {
+    font-family: 'BrawlStars';
+    src: url('assets/fonts/bs-font.woff2') format('woff2'),
+         url('assets/fonts/bs-font.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
 
+@font-face {
+    font-family: 'bs-rus';
+    src: url("assets/fonts/lilitaonerus.ttf");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
 /* Общие сбросы и фон */
 * {
     margin: 0;
@@ -8,16 +23,36 @@
 }
 
 body {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    height: 100vh;
+    /* Левая колонка занимает оставшееся место (1fr), правая под магазин (0.7fr от нее) */
+    grid-template-columns: 1fr 0.7fr; 
+    /* Верхняя строка под кликер (забирает максимум), нижняя под ящики (по размеру контента) */
+    grid-template-rows: 1fr auto; 
+    
+    /* Описываем карту сетки визуально */
+    grid-template-areas: 
+        "clicker shop"
+        "boxes   shop";
+
     font-family: 'Quicksand', 'Segoe UI', sans-serif;
     background: linear-gradient(145deg, #ffdde1 0%, #f9c9d6 100%);
     user-select: none; /* чтобы случайно не выделять текст */
     margin: 0;
-    padding: 20px;
+}
+
+#main-content {
+    grid-area: clicker;
+    display: flex;
+    flex-direction: column;
+}
+
+#main-clicker{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; 
 }
 
 /* Шапка со счётом */
@@ -61,8 +96,8 @@ header {
 
 /* Монета - главный объект */
 #coin {
-    width: 200px;
-    height: 200px;
+    width: 250px;
+    height: 250px;
     cursor: pointer;
     transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
                 box-shadow 0.25s ease;
@@ -70,6 +105,7 @@ header {
     border-radius: 50%; /* если картинка не круглая, это поможет, но лучше подготовить круглую */
     object-fit: contain; /* сохраняет пропорции */
     will-change: transform;
+    background-color: #3d2632;
 }
 
 /* Анимация при наведении (лёгкое парение) */
@@ -105,38 +141,81 @@ header {
     50% { opacity: 0.8; transform: scale(1.08); }
 }
 
-/* Чтобы ::after работал, обернём монету в относительный контейнер,
-   либо просто используем дополнительный элемент. Упростим: добавим
-   декоративный кружок через псевдоэлемент самого body, но проще
-   оставить без него, чтобы не усложнять. 
-   Вместо этого добавим красивый фон с "конфетти" или точками - опционально.
-   Я предлагаю просто оставить чистый дизайн, эффект выше не обязателен. */
-
-/* Адаптивность для маленьких экранов */
-@media (max-width: 600px) {
-    #score {
-        font-size: 2.4rem;
-        padding: 0.2rem 1.2rem;
-        min-width: 120px;
-    }
-    #coin {
-        width: 150px;
-        height: 150px;
-    }
+#progress {
+    position: relative;
+    width: max-content;
+    max-width: 320px;
+    margin: 15px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #4a2e3b;
 }
 
-@media (max-width: 400px) {
-    #coin {
-        width: 120px;
-        height: 120px;
-    }
-    #score {
-        font-size: 2rem;
-        padding: 0.1rem 0.8rem;
-        min-width: 90px;
-    }
+.level-info-row {
+    display: flex;
+    align-items: center;
 }
 
+.rank-container {
+    display: flex;
+    align-items: center;
+    justify-content: c;
+}
+
+.rank-container img {
+    position: absolute;
+    z-index: 1;
+    left: -20px;
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+
+/* Серый трек — задний фон шкалы */
+.progress-bar-track {
+    width: 70%;
+    flex-basis: 70%;
+    min-width: 220px;
+    height: 30px;
+    background-color: #e0d0d5;
+    border: 2px solid #4a2e3b;
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2),
+                0 2px 4px rgba(255, 255, 255, 0.5);
+    position: relative;
+}
+
+/* Синее сочное заполнение полосы */
+#progress-fill {
+    width: 0%; /* Будет меняться динамически через JS от 0% до 100% */
+    height: 100%;
+    background: linear-gradient(to bottom, #00bfff 0%, #007acc 100%);
+    border-radius: 10px 0 0 10px;
+    box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.2),
+                inset 0 3px 0 rgba(255, 255, 255, 0.4);
+    
+    /* Плавное перетекание при заполнении */
+    transition: width 0.15s cubic-bezier(0.4, 0, 0.2, 1); 
+    position: relative;
+}
+
+/* Эффект глянцевого блеска/партикла на конце полосы */
+#progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 15px;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.6));
+    filter: blur(1px);
+}
 
 /* Контейнер для частиц – чтобы они не выходили за пределы экрана */
 #particles-container {
@@ -145,20 +224,25 @@ header {
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;  /* чтобы клики проходили сквозь */
-    z-index: 9999;
+    pointer-events: none;
+    z-index: 1;
     overflow: visible;
 }
 
 /* Каждая частица-трофей */
 .trophy-particle {
     position: absolute;
+    z-index: -10;
     width: 100px;
     height: 100px;
     pointer-events: none;
     opacity: 1;
-    /* Начальное положение – центр монеты (будет задано в JS) */
-    transition: none; /* отключаем переходы, управляем через анимацию */
+    transition: none;
+}
+
+/* Класс, который запускает анимацию */
+.trophy-particle.animate {
+    animation: flyAway 0.8s ease-out forwards;
 }
 
 /* Ключевые кадры: разлёт + вращение + затухание */
@@ -179,51 +263,69 @@ header {
     font-size: 2.5rem;
     font-weight: 900;
     color: #4a2e3b;
+    
+    text-shadow:
+        -2px -2px 0 rgba(255, 255, 255, 0.6),
+         2px -2px 0 rgba(255, 255, 255, 0.6),
+        -2px  2px 0 rgba(255, 255, 255, 0.6),
+         2px  2px 0 rgba(255, 255, 255, 0.6),
+        -2px  0px 0 rgba(255, 255, 255, 0.6),
+         2px  0px 0 rgba(255, 255, 255, 0.6),
+         0px -2px 0 rgba(255, 255, 255, 0.6),
+         0px  2px 0 rgba(255, 255, 255, 0.6);
+
     pointer-events: none;
-    z-index: 10000;
+    z-index: 2;
     font-family: 'Quicksand', sans-serif;
-    animation: floatUp 0.9s ease-out forwards;
+    animation: floatUp 0.6s ease-out forwards;
+}
+
+.float-text.waste{
+    color: #790012;
+    scale: 1.1;
 }
 
 @keyframes floatUp {
     0% {
         opacity: 1;
-        transform: translateY(0px) scale(1);
+        transform: translateY(0px);
     }
     100% {
-        opacity: 0;
-        transform: translateY(-120px) scale(1.5);
+        opacity: 0.2;
+        transform: translateY(-60px);
     }
 }
 
-/* Класс, который запускает анимацию */
-.trophy-particle.animate {
-    animation: flyAway 0.8s ease-out forwards;
-    /* forwards – чтобы остаться в конечном состоянии (opacity:0) */
-}
 
+#boxes-row{
+    grid-area: boxes;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 10px; /* заменили margin на padding для красоты сетки */
+}
 
 /* ===== Панель магазина ===== */
 #shop-panel {
-    position: fixed;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 240px;
+    grid-area: shop;
+    height: 100vh; 
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+
     background: rgba(255, 240, 245, 0.92);
     backdrop-filter: blur(8px);
-    border-radius: 28px;
+    border-radius: 28px 0px 0px 28px;
     padding: 20px 18px;
     box-shadow: 0 12px 35px rgba(190, 120, 130, 0.25),
                 inset 0 2px 0 rgba(255, 255, 255, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.5);
-    font-family: 'Quicksand', 'Segoe UI', sans-serif;
-    user-select: none;
-    z-index: 10;
-    transition: transform 0.3s ease;
 }
 
 #shop-panel h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     margin: 0 0 15px 0;
     font-size: 1.6rem;
     font-weight: 700;
@@ -232,35 +334,318 @@ header {
     letter-spacing: 0.03em;
 }
 
+#shop-icon {
+    display: block;
+    width: 2rem;
+    height: 2rem;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.1));
+}
+
 .shop-item {
+    position: relative;
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
+    justify-content: space-between;
     background: rgba(255, 255, 255, 0.5);
     border-radius: 18px;
     padding: 12px 14px;
     margin-bottom: 12px;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.04);
     transition: background 0.2s;
+    cursor: pointer;
 }
 
-.shop-item:hover {
+.shop-item:not(.disabled):hover {
     background: rgba(255, 255, 255, 0.75);
 }
+.shop-item.disabled {
+    background-color: rgba(170, 170, 170, 0.5);
+    cursor: auto;
+}
 
+.shop-item.closed::before{
+    content: '???';
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #4a2e3b;
+
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    border-radius: 18px;
+    background-color: #ffa0cc;
+    box-shadow: inset 0 0 0 2px #230010;
+    outline: 2px solid #230010;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item-content{
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    flex: 1;
+    gap: 8px;
+}
+
+.item-icon {
+    width: 30px;
+    height: 30px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.item-info{
+    display: flex;
+    flex-direction: column;
+}
 .item-name {
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: #3d2632;
 }
 
 .item-effect {
     font-size: 0.85rem;
     color: #7a5a6a;
-    margin: 4px 0 8px 0;
 }
 
-.buy-btn {
+.item-price {
+    padding: 8px 12px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #3d2632;
+    font-family: inherit;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* ===== Карточка Мегабокса ===== */
+#megabox-card {
+    width: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    padding: 12px;
+    border-radius: 12px;
+    background-color: #f7dc6f;
+    cursor: pointer;
+    box-shadow: 0px 0px 10px 3px rgba(255, 242, 242, 0.749);
+}
+
+#megabox-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 18px 40px rgba(200, 100, 80, 0.45),
+                inset 0 -4px 0 #d68f7a;
+}
+
+#megabox-card:hover .megabox-img {
+    transform: scale(1.04) rotate(-2deg);
+}
+
+.megabox-img {
+    display: block;
+    width: 100%;
+    object-fit: contain;
+}
+
+#megabox-card .megabox-img{
+    transition: transform 0.2s ease;
+}
+
+
+/* Подпись под картинкой (если добавили) */
+.box-label {
+    display: block;
+    margin-top: 4px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #4a2e3b;
+    text-shadow: 0 2px 4px rgba(255,255,255,0.3);
+    letter-spacing: 0.04em;
+}
+
+
+/* ===== Магазин бравлеров (Grid) ===== */
+#megabox-shop {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    
+    /* ИСПРАВЛЕНИЕ: Меняем фиксированные 500px на адаптивные проценты */
+    width: 100%;
+    max-width: 480px; /* Максимальная ширина на ПК */
+    
+    /* На мобилках окно займет 92% ширины экрана и не вызовет скролл */
+    width: 92vw; 
+    
+    max-height: 85vh;
+    padding: 30px 16px 20px 16px;
+    background: linear-gradient(145deg, #ff3c70, #e62e5c);
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    z-index: 5; /* Поднимаем выше всего, включая магазин */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+#megabox-shop.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+#brawlers-catalog{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    justify-items: center;
+}
+
+#modal-close {
+    width: 36px;
+    height: 36px;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    background-color: #00bfff;
+    border: 2px solid #004f6a;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0;
+    line-height: 1;
+    padding: 0;
+}
+#modal-close svg{
+    display: block;
+}
+
+#modal-close:hover {
+    transform: scale(1.1);
+}
+
+/* Карточка бравлера */
+.brawler-card {
+    width: 120px; 
+    height: 150px;
+    
+    padding: 12px 8px 10px 8px;
+    background: linear-gradient(145deg, #f7dc6f, #f1c40f);
+    border-radius: 16px;
+    box-shadow: 0 6px 0 #b7950b,
+                0 8px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.3s ease;
+    cursor: default;
+    perspective: 800px; /* глубина 3D */
+
+    position: relative;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+}
+
+.brawler-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 0 #b7950b,
+                0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+.brawler-card.flipped {
+    transform: rotateY(180deg);
+}
+
+.brawler-front, .brawler-back{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; /* скрываем обратную сторону */
+    border-radius: 16px;
+    padding: 12px 8px 10px;
+    background: linear-gradient(145deg, #f7dc6f, #f1c40f);
+    box-shadow: 0 6px 0 #b7950b, 0 8px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+
+    min-width: 110px; 
+}
+.brawler-back {
+    transform: rotateY(180deg);
+    padding: 12px 6px;
+}
+
+/* Изображение бравлера (чёрный силуэт по умолчанию) */
+.brawler-img {
+    width: 100px;
+    height: 100px;
+    aspect-ratio: 1/1;
+    object-fit: contain;
+    filter: brightness(0) saturate(0);
+    transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.3s ease;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.1);
+
+    flex-shrink: 0
+}
+
+/* Когда бравлер открыт (цветной) */
+.brawler-img.unlocked {
+    filter: brightness(1) saturate(1);
+}
+
+/* Анимация появления цветного бравлера */
+@keyframes revealBrawler {
+    0% {
+        transform: scale(0.8);
+        filter: brightness(0) saturate(0);
+    }
+    60% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        filter: brightness(1) saturate(1);
+    }
+}
+
+/* Имя бравлера */
+.brawler-stat {
+    display: block;
+    margin-top: 6px;
+    font-weight: 800;
+    font-size: 1rem;
+    color: #3d2632;
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.04em;
+}
+
+#buy-brawler {
     background: #fbc4d0;
     border: none;
     border-radius: 40px;
@@ -269,84 +654,617 @@ header {
     font-size: 0.95rem;
     color: #3d2632;
     cursor: pointer;
-    box-shadow: 0 4px 0 #d68f9e;
+    box-shadow: 0 4px 0 #ff97ae;
     transition: all 0.1s ease;
     font-family: inherit;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-
-.buy-btn:active {
+#buy-brawler:active {
     transform: translateY(3px);
     box-shadow: 0 1px 0 #d68f9e;
 }
 
-.buy-btn:disabled {
+#buy-brawler:disabled {
     opacity: 0.5;
     transform: translateY(2px);
     box-shadow: 0 2px 0 #d68f9e;
     cursor: not-allowed;
 }
 
-#milk-counter {
+#megabox-unlocking{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("assets/brawl_stars_lobby.jpeg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 6;
+
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.1rem;
-    margin-top: 16px;
+
+    opacity: 0;
+    visibility: hidden;
+}
+
+#megabox-unlocking.active{
+    opacity: 1;
+    visibility: inherit;
+}
+
+#megabox-click{
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.megabox-background {
+    position: relative;            /* чтобы псевдоэлемент позиционировался внутри */
+    display: inline-block;         /* или block, зависит от вёрстки */
+    /* можно задать размеры, если нужно */
+}
+
+.megabox-background::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-51%, -48%);
+    width: 100%;                  /* размер свечения относительно контейнера */
+    height: 100%;
+    background: radial-gradient(circle, rgb(30, 143, 255) 0%, rgb(67, 127, 255) 40%, transparent 50%);
+    z-index: -1;                   /* позади картинки, но внутри контейнера */
+    pointer-events: none;         /* чтобы не мешать кликам */
+}
+
+#megabox-click span{
+    color: #ffffff;
+    font-size: 36px;
+    font-family: bs-rus;
+    text-shadow:
+    -2px -2px 0 rgba(0,0,0),
+    2px -2px 0 rgba(0,0,0),
+    -2px  2px 0 rgba(0,0,0),
+    2px  2px 0 rgba(0,0,0);
+    animation: textPulse 0.5s ease-in-out infinite alternate;
+}
+
+.megabox-wrapper {
+    display: inline-block;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: center bottom;
+}
+
+.megabox-wrapper:hover {
+    transform: scale(1.1);
+}
+
+.megabox-wrapper:hover .megabox-img.bouncing{
+    animation: none;
+}
+
+/* ===== Анимация подпрыгивания мегаящика ===== */
+@keyframes megaBounce {
+    0% {
+        transform: translateY(0px) scale(1) rotate(0deg);
+    }
+    15% {
+        transform: translateY(0px) scale(1) rotate(0deg); /* пауза до 15% */
+    }
+    25% {
+        transform: translateY(-12px) scale(1.04) rotate(-2deg);
+    }
+    30% {
+        transform: translateY(-6px) scale(1.02) rotate(1deg);
+    }
+    35% {
+        transform: translateY(-14px) scale(1.05) rotate(-3deg);
+    }
+    45% {
+        transform: translateY(-4px) scale(1.01) rotate(1.5deg);
+    }
+    55% {
+        transform: translateY(-8px) scale(1.03) rotate(-1.5deg);
+    }
+    65% {
+        transform: translateY(-2px) scale(0.99) rotate(0.5deg);
+    }
+    75% {
+        transform: translateY(0px) scale(1) rotate(0deg); /* возврат в исходное */
+    }
+    100% {
+        transform: translateY(0px) scale(1) rotate(0deg); /* пауза до конца */
+    }
+}
+
+#megabox-unlocking .megabox-img {
+    transition: transform 1s ease;
+}
+
+.megabox-img.bouncing {
+    transform-origin: center bottom; /* чтобы подпрыгивание шло от основания */
+    animation: megaBounce 2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+
+@keyframes textPulse {
+    0% {
+        transform: scale(1);
+    }
+    15%{
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.08);
+    }
+}
+
+
+/* ===== Модальное окно на весь экран ===== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none; 
+    justify-content: center;
+    align-items: center;
+    z-index: 7;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;  /* чтобы видео не вылезало за скругление */
+    background: #000;  /* на случай, если видео не загрузится */
+    perspective: 800px;
+}
+
+/* Фоновое видео внутри модалки */
+.modal-bg-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;        /* ниже контента */
+    pointer-events: none; /* чтобы не перехватывать клики */
+}
+.modal-bg-video.hidden{
+    display: none;
+}
+
+/* Контейнер фона */
+.brawler-unlock-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    
+    --bg-color-main: #e61c24;  /* Подложка */
+    --bg-color-ray: #ff545a;   /* Цвет прямоугольных полос */
+    
+    background-color: var(--bg-color-main);
+    overflow: hidden;
+    opacity: 0;
+}
+
+/* Показываем фон, когда видео скрывается */
+.modal-bg-video.hidden ~ .brawler-unlock-bg {
+    opacity: 1;
+}
+
+
+/* Контейнер, который вращается вокруг центра смещения */
+.sunburst-stripes {
+    position: absolute;
+    top: 50%;
+    
+    /* ИСПРАВЛЕНИЕ 1: Отодвигаем центр лучей чуть левее (было 50%) */
+    left: 30%; 
+    
+    width: 200vmax; 
+    height: 200vmax;
+    
+    /* Центрируем относительно новой точки */
+    transform: translate(-50%, -50%) rotate(0deg);
+    transform-origin: center center;
+    animation: rotateRays 30s linear infinite;
+}
+
+/* Каждая отдельная прямоугольная полоса */
+.stripe {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 35px; /* Ширина полосы */
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        transparent 15%,
+        var(--bg-color-ray) 45%,
+        var(--bg-color-ray) 55%,
+        transparent 85%
+    );
+    transform: translateX(-50%) rotate(var(--rot));
+    transform-origin: center center;
+}
+
+/* Корректируем центральное свечение, чтобы оно тоже сместилось вслед за лучами */
+.bg-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Свечение теперь тоже исходит из точки 40% слева */
+    background: radial-gradient(circle at 30% 50%, 
+        rgb(255, 220, 137) 0%, 
+        rgb(255, 229, 169) 35%,
+        transparent 50%
+    );
+    mix-blend-mode: overlay;
+    pointer-events: none;
+}
+
+/* Обновленная анимация вращения с учетом смещенного центра */
+@keyframes rotateRays {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* ===== Анимация появления бравлера ===== */
+.brawler-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 60%;        /* На мобилках займет почти всю ширину */
+    max-width: 450px;   /* На ПК не станет огромным */
+    height: 450px;
+    min-height: fit-content;
+    animation: spin 2.1s linear forwards;
+    transition: 1s ease;
+}
+.brawler-wrapper::before{
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 40%);
+    width: 80%;
+    height: 40px;
+    background-color: #0000008c;
+    border-radius: 50%;
+    transition: transform 1s linear; 
+
+}
+.modal-brawler-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    z-index: 1;
+    pointer-events: none;
+    transform-style: preserve-3d;
+    transition: transform 1s linear; 
+
+}
+
+@keyframes spin{
+    0% {
+        transform: translate(-50%, -50%) scale(0.1) rotateY(0deg);
+        filter: saturate(0) brightness(0);
+    }
+    50%{
+        transform: translate(-50%, -50%) scale(0.5) rotateY(720deg);
+        filter: saturate(0) brightness(0);
+    }
+    99% {
+        transform: translate(-50%, -50%) scale(1) rotateY(1440deg);
+        filter: saturate(0) brightness(0);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1) rotateY(1440deg);
+        filter: saturate(1) brightness(1);
+    }
+}
+
+.brawler-wrapper.unlocked{
+    top: 50%;
+    left: 30%;
+    transform: translate(-50%, -50%);
+}
+/* Когда родитель получает класс .unlocked, плавно уменьшаем саму картинку внутри */
+.brawler-wrapper.unlocked .modal-brawler-image {
+    transform: scale(0.7);
+}
+.brawler-wrapper.unlocked::before{
+    transform: translate(-50%, -120%) scale(0.7);
+}
+
+#brawler-desc{
+    width: 40%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+    text-wrap: balance;
+    background-color: #005b97;
+    border: 5px solid #001c26;
+    color: #fff;
+    font-family: bs-rus;
+    position: absolute;
+    right: -100%;
+    top: 50%;
+    transform: translateY(-50%);
+    letter-spacing: 4px;
+    text-shadow:
+    -2px -2px 0 rgba(0,0,0),
+    2px -2px 0 rgba(0,0,0),
+    -2px  2px 0 rgba(0,0,0),
+    2px  2px 0 rgba(0,0,0);
+    transition: right 1s ease;
+    padding: 8px 0px;
+}
+
+#brawler-desc.unlocked{
+    right: 15px;
+}
+
+
+#mobile-nav {
+    display: none; /* скрыто на десктопе */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 240, 245, 0.95);
+    backdrop-filter: blur(8px);
+    border-radius: 8px 8px 0px 0px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    z-index: 2;
+    padding: 8px 0 12px 0;
+}
+
+#mobile-nav nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+#mobile-nav button {
+    background: none;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #7a5a6a;
+    padding: 6px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Quicksand', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+#mobile-nav button .nav-icon {
     font-size: 1.5rem;
-    font-weight: 700;
+    line-height: 1;
+}
+
+#mobile-nav button.active {
     color: #4a2e3b;
-    background: rgba(255,255,240,0.7);
-    border-radius: 40px;
-    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* Адаптивность для маленьких экранов */
-@media (max-width: 700px) {
-    #shop-panel {
-        left: 10px;
-        width: 170px;
-        padding: 14px 12px;
-        top: 55%;
-    }
-    #shop-panel h2 { font-size: 1.2rem; }
-    .item-name { font-size: 0.95rem; }
-    .item-effect { font-size: 0.75rem; }
-    .buy-btn { font-size: 0.8rem; padding: 6px 10px; }
-    #milk-counter { font-size: 1.2rem; }
+#mobile-nav button:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
-@media (max-width: 480px) {
+
+
+/* ===== Адаптивность для планшетов и телефонов ===== */
+@media (max-width: 768px) {
+    body {
+        display: block;
+        min-height: 100vh;
+    }
+
+    #main-content {
+        height: auto;
+        min-height: 70vh;
+    }
+
     #shop-panel {
-        left: 5px;
+        display: none;
+
+        height: auto;
+        width: 100%;
+        border-radius: 28px 28px 0 0;
+        flex: none;
+        padding: 16px 14px;
+        overflow-y: auto;
+    }
+
+    #shop-panel h2 {
+        font-size: 1.4rem;
+        margin-bottom: 10px;
+    }
+
+    .shop-item {
+        padding: 10px 12px;
+        margin-bottom: 8px;
+    }
+
+    .item-name {
+        font-size: 1rem;
+    }
+
+    .item-effect {
+        font-size: 0.75rem;
+    }
+
+    .item-price {
+        font-size: 1.1rem;
+        padding: 6px 10px;
+    }
+
+    #coin {
+        width: 180px;
+        height: 180px;
+    }
+
+    #score {
+        font-size: 2.5rem;
+    }
+
+
+    #brawler-desc{
+        font-size: 0.9rem;
+    }
+
+
+    #boxes-row{
+        display: none;
+    }
+    #mobile-nav{
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    #coin {
         width: 140px;
-        padding: 10px 8px;
-        top: 50%;
+        height: 140px;
     }
-    #shop-panel h2 { font-size: 1rem; }
-    .shop-item { padding: 8px 10px; }
-    .item-name { font-size: 0.8rem; }
-    .item-effect { font-size: 0.65rem; }
-    .buy-btn { font-size: 0.7rem; padding: 4px 8px; }
-    #milk-counter { font-size: 1rem; }
-}
 
+    #score {
+        font-size: 2rem;
+    }
 
-/* ===== Иконки в магазине ===== */
+    header {
+        padding: 0.1rem 0.8rem;
+        min-width: 90px;
+        margin-bottom: 15px;
+    }
 
+    .currency-icon.header {
+        width: 2.5rem;
+        height: 2.2rem;
+    }
 
-.item-icon {
-    width: 30px;
-    height: 30px;
-    vertical-align: middle;
-    margin-right: 6px;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-}
+    #megabox-card {
+        width: 110px;
+        padding: 8px;
+    }
 
-/* Для мобильных экранов можно уменьшить */
-@media (max-width: 700px) {
-    .currency-icon { width: 18px; height: 18px; }
-    .item-icon { width: 20px; height: 20px; }
-}
-@media (max-width: 480px) {
-    .currency-icon { width: 14px; height: 14px; }
-    .item-icon { width: 16px; height: 16px; }
+    .box-label {
+        font-size: 0.9rem;
+    }
+
+    #shop-panel {
+        padding: 12px 10px;
+    }
+
+    #shop-panel h2 {
+        font-size: 1.2rem;
+        gap: 6px;
+    }
+
+    #shop-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    .shop-item {
+        padding: 8px 10px;
+        margin-bottom: 6px;
+        border-radius: 14px;
+    }
+
+    .item-name {
+        font-size: 0.9rem;
+    }
+
+    .item-effect {
+        font-size: 0.7rem;
+    }
+
+    .item-price {
+        font-size: 0.9rem;
+        padding: 4px 8px;
+    }
+
+    .item-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .currency-icon {
+        width: 24px;
+        height: 20px;
+    }
+
+    #brawlers-catalog {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .brawler-card {
+        height: 120px;
+        padding: 6px 4px;
+    }
+
+    .brawler-front .brawler-stat {
+        font-size: 0.7rem;
+        margin-top: 4px;
+    }
+
+    .brawler-back span {
+        font-size: 0.8rem;
+    }
+
+    #megabox-click span {
+        font-size: 22px;
+    }
+    .float-text {
+        font-size: 1.8rem;
+    }
+    #brawler-desc{
+        font-size: 0.8rem;
+    }
 }

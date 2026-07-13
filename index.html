@@ -10,42 +10,262 @@
     <title>Document</title>
 </head>
 <body>
-    <header>
-        <img src="assets/trophy.png" class="currency-icon header" alt="трофей"/>
-        <span id="score">0</span>
-    </header>
-    <img src="assets/clicker-coin.png" alt="Монета Brawl Stars" id="coin">
+    <div id="main-content" class="section">
+        <div id="main-clicker">
+            <header id="clicker-header">
+                <img src="assets/icons/trophy_icon.png" class="currency-icon header" alt="трофей"/>
+                <span id="score">0</span>
+            </header>
+            <img src="assets/clicker-coin.png" alt="Монета Brawl Stars" id="coin" draggable="false">
+            <div id="progress">
+                <div class="level-info-row">
+                    <span class="rank-container">
+                        <img src="assets/ranked/level_1.png" alt="Ранг" id="level-img" draggable="false">
+                    </span>
+                    <div class="progress-bar-track">
+                        <div id="progress-fill"></div>
+                    </div>
+                </div>
+            
+                <span id="level-title">Уровень 1</span>
+            </div>
 
-    <!-- Панель магазина -->
-    <div id="shop-panel">
-        <h2>🏪 Магазин</h2>
-        
-        <div class="shop-item">
-            <span class="item-name">
-                <img src="assets/power-cube.png" class="item-icon" alt="power" />
-                Куб усиления
-            </span>
-            <span class="item-effect">+1 трофей/сек</span>
-            <button class="buy-btn" data-item="autoclick" data-price="20">
-                <img src="assets/trophy.png" class="currency-icon" alt="трофей" /> 20
-            </button>
-        </div>
-        
-        <div class="shop-item">
-            <span class="item-name">Курсор</span>
-            <span class="item-effect">+1 за клик</span>
-            <button class="buy-btn" data-item="cursor" data-price="100">
-                <img src="assets/trophy.png" class="currency-icon" alt="трофей" /> 100
-            </button>
+            <div id="particles-container"></div>
         </div>
     </div>
 
-    <audio id="bg-music" loop hidden>
-        <source src="assets/bg-sounds/standart-menu.mp3" type="">
-        <source src="assets/bg-sounds/lunar-new-year.mp3" type="">
-        <source src="assets/bg-sounds/mecha-menu.mp3" type="">
-    </audio>
+    <div id="boxes-row" class="section">
+        <div id="megabox-card">
+            <img src="assets/MegaBox.png" alt="megabox" class="megabox-img">
+            <span class="box-label">Мегабокс</span>
+        </div>
+    </div>
 
-    <audio src="assets/Звук монет в Brawl Stars.mp3" id="coin-sound"></audio>
+    <div id="shop-panel" class="section">
+        <h2>Магазин <img src="assets/icons/shop_icon.png" alt="" id="shop-icon"> </h2>
+
+        <!-- 1. Автоклик -->
+        <div class="shop-item" data-item="autoclick-1" data-price="20">
+            <div class="item-content">
+                <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
+                <div class="item-info">
+                    <span class="item-name">Автоклик</span>
+                    <span class="item-effect">+1 трофей/сек</span>
+                </div>
+            </div>
+            <span class="item-price">
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 20
+            </span>
+        </div>
+
+        <!-- 2. Курсор -->
+        <div class="shop-item closed" data-item="cursor-1" data-price="100">
+            <div class="item-content">
+                <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
+                <div class="item-info">
+                    <span class="item-name">Курсор</span>
+                    <span class="item-effect">+1 за клик</span>
+                </div>
+            </div>
+            <span class="item-price">
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 100
+            </span>
+        </div>
+
+        <!-- 3. Кристаллический автоклик -->
+        <div class="shop-item closed" data-item="autoclick-5" data-price="500">
+            <div class="item-content">
+                <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
+                <div class="item-info">
+                    <span class="item-name">Кристаллический автоклик</span>
+                    <span class="item-effect">+5 трофеев/сек</span>
+                </div>
+            </div>
+            <span class="item-price">
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 500
+            </span>
+        </div>
+
+        <!-- 4. Кристаллический курсор -->
+        <div class="shop-item closed" data-item="cursor-3" data-price="1000">
+            <div class="item-content">
+                <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
+                <div class="item-info">
+                    <span class="item-name">Кристаллический курсор</span>
+                    <span class="item-effect">+3 за клик</span>
+                </div>
+            </div>
+            <span class="item-price">
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 1000
+            </span>
+        </div>
+
+        <!-- 5. Гемовый автоклик -->
+        <div class="shop-item closed" data-item="autoclick-10" data-price="2000">
+            <div class="item-content">
+                <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
+                <div class="item-info">
+                    <span class="item-name">Гемовый автоклик</span>
+                    <span class="item-effect">+10 трофеев/сек</span>
+                </div>
+            </div>
+            <span class="item-price">
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 2000
+            </span>
+        </div>
+
+        <!-- 6. Гемовый курсор -->
+        <div class="shop-item closed" data-item="cursor-5" data-price="3000">
+            <div class="item-content">
+                <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
+                <div class="item-info">
+                    <span class="item-name">Гемовый курсор</span>
+                    <span class="item-effect">+5 за клик</span>
+                </div>
+            </div>
+            <span class="item-price">
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 3000
+            </span>
+        </div>
+
+        <!-- 7. Блинговый автоклик -->
+        <div class="shop-item closed" data-item="cursor-5" data-price="5000">
+            <div class="item-content">
+                <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
+                <div class="item-info">
+                    <span class="item-name">Блинговый автоклик</span>
+                    <span class="item-effect">+20 трофеев/сек</span>
+                </div>
+            </div>
+            <span class="item-price">
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 5000
+            </span>
+        </div>
+
+        <!-- 8. Блинговый курсор -->
+        <div class="shop-item closed" data-item="cursor-10" data-price="7000">
+            <div class="item-content">
+                <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
+                <div class="item-info">
+                    <span class="item-name">Блинговый курсор</span>
+                    <span class="item-effect">+10 за клик</span>
+                </div>
+            </div>
+            <span class="item-price">
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 7000
+            </span>
+        </div>
+    </div>
+
+    <div id="megabox-shop">
+        <button id="modal-close">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" width="32px" height="32px"><path d="M18.8,16l5.5-5.5c0.8-0.8,0.8-2,0-2.8l0,0C24,7.3,23.5,7,23,7c-0.5,0-1,0.2-1.4,0.6L16,13.2l-5.5-5.5  c-0.8-0.8-2.1-0.8-2.8,0C7.3,8,7,8.5,7,9.1s0.2,1,0.6,1.4l5.5,5.5l-5.5,5.5C7.3,21.9,7,22.4,7,23c0,0.5,0.2,1,0.6,1.4  C8,24.8,8.5,25,9,25c0.5,0,1-0.2,1.4-0.6l5.5-5.5l5.5,5.5c0.8,0.8,2.1,0.8,2.8,0c0.8-0.8,0.8-2.1,0-2.8L18.8,16z"/></svg>
+        </button>
+
+        <div id="brawlers-catalog">
+            <div class="brawler-card">
+                <div class="brawler-front">
+                    <img src="assets/portraits/shelly_portrait.png" alt="" class="brawler-img" draggable="false">
+                    <span class="brawler-stat">Shelly</span>
+                </div>
+                <div class="brawler-back">
+                    <span>1.25 Множитель</span>
+                </div>
+            </div>
+            <div class="brawler-card">
+                <div class="brawler-front">
+                    <img src="assets/portraits/el-primo_portrait.png" alt="" class="brawler-img" draggable="false">
+                    <span class="brawler-stat">El Primo</span>
+                </div>
+                <div class="brawler-back">
+                    <span>1.25 Множитель</span>
+                </div>                
+            </div>
+            <div class="brawler-card">
+                <div class="brawler-front">
+                    <img src="assets/portraits/bibi_portrait.png" alt="" class="brawler-img" draggable="false">
+                    <span class="brawler-stat">Bibi</span>
+                </div>
+                <div class="brawler-back">
+                    <span>1.25 Множитель</span>
+                </div>   
+            </div>
+            <div class="brawler-card">
+                <div class="brawler-front">
+                    <img src="assets/portraits/mortis_portrait.png" alt="" class="brawler-img" draggable="false">
+                    <span class="brawler-stat">Mortis</span>
+                </div>
+                <div class="brawler-back">
+                    <span>1.25 Множитель</span>
+                </div>   
+            </div>
+            <div class="brawler-card">
+                <div class="brawler-front">
+                    <img src="assets/portraits/leon_portrait.png" alt="" class="brawler-img" draggable="false">
+                    <span class="brawler-stat">Leon</span>
+                </div>
+                <div class="brawler-back">
+                    <span>1.25 Множитель</span>
+                </div>   
+            </div>
+        </div>
+
+        <button id="buy-brawler" data-item="megabox">1000 <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /></button>
+    </div>
+
+    <div id="megabox-unlocking">
+        <div id="megabox-click">
+            <div class="megabox-background">
+                <div class="megabox-wrapper">
+                    <img src="assets/MegaBox.png" alt="megabox" class="megabox-img bouncing" draggable="false">
+                </div>
+            </div>
+            <span>ЖМИ! ЖМИ!</span>
+        </div>
+    </div>
+
+    <div id="megabox-modal" class="modal-overlay">
+        <div class="modal-content">
+            <video class="modal-bg-video" autoplay muted playsinline>
+                <source src="assets/brawler_unlocking.mp4" type="video/mp4">
+            </video>
+
+            <div class="brawler-unlock-bg">
+                <div class="sunburst-stripes">
+                    <div class="stripe" style="--rot: 0deg;"></div>
+                    <div class="stripe" style="--rot: 15deg;"></div>
+                    <div class="stripe" style="--rot: 30deg;"></div>
+                    <div class="stripe" style="--rot: 45deg;"></div>
+                    <div class="stripe" style="--rot: 60deg;"></div>
+                    <div class="stripe" style="--rot: 75deg;"></div>
+                    <div class="stripe" style="--rot: 90deg;"></div>
+                    <div class="stripe" style="--rot: 105deg;"></div>
+                    <div class="stripe" style="--rot: 120deg;"></div>
+                    <div class="stripe" style="--rot: 135deg;"></div>
+                    <div class="stripe" style="--rot: 150deg;"></div>
+                    <div class="stripe" style="--rot: 165deg;"></div>
+                </div>
+                <div class="bg-glow"></div>
+            </div>
+
+            <div id="brawler-desc">
+                <h2>Шелли</h2>
+                <p>Крутой тип</p>
+            </div>
+            
+            <div class="brawler-wrapper">
+                <img src="assets/brawler-models/shelly_model.png" alt="Shelly" class="modal-brawler-image appear">
+            </div>
+        </div>
+    </div>
+
+    <footer id="mobile-nav">
+        <nav>
+            <button data-section="shop-panel">🏪 Магазин</button>
+            <button data-section="main-content" class="active">🪙 Кликер</button>
+            <button data-section="boxes-row">📦 Ящики</button>
+        </nav>
+    </footer>
+
 </body>
 </html>
