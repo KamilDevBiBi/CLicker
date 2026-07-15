@@ -286,6 +286,10 @@ header {
     color: #790012;
     scale: 1.1;
 }
+.float-text.bonus{
+    color: #00c900;
+    scale: 1.1;
+}
 
 @keyframes floatUp {
     0% {
@@ -819,7 +823,7 @@ header {
     left: 0;
     width: 100%;
     height: 100%;
-    display: none; 
+    display: none;
     justify-content: center;
     align-items: center;
     z-index: 7;
@@ -834,7 +838,7 @@ header {
     width: 100%;
     height: 100%;
     overflow: hidden;  /* чтобы видео не вылезало за скругление */
-    background: #000;  /* на случай, если видео не загрузится */
+    background: #ffffff;  /* на случай, если видео не загрузится */
     perspective: 800px;
 }
 
@@ -870,7 +874,6 @@ header {
     opacity: 0;
 }
 
-/* Показываем фон, когда видео скрывается */
 .modal-bg-video.hidden ~ .brawler-unlock-bg {
     opacity: 1;
 }
@@ -951,8 +954,7 @@ header {
 
     width: 60%;        /* На мобилках займет почти всю ширину */
     max-width: 450px;   /* На ПК не станет огромным */
-    height: 450px;
-    min-height: fit-content;
+    height: auto;
     animation: spin 2.1s linear forwards;
     transition: 1s ease;
 }
@@ -972,6 +974,7 @@ header {
 .modal-brawler-image {
     width: 100%;
     height: 100%;
+    max-height: 600px;
     object-fit: contain; 
     z-index: 1;
     pointer-events: none;
@@ -999,17 +1002,22 @@ header {
     }
 }
 
-.brawler-wrapper.unlocked{
-    top: 50%;
-    left: 30%;
-    transform: translate(-50%, -50%);
+@keyframes shrinkAndMove {
+    0% {
+        /* Стартуем ровно из той точки, где нас оставила анимация spin */
+        left: 50%;
+        transform: translate(-50%, -50%) scale(1) rotateY(1440deg);
+    }
+    100% {
+        /* Финальная точка: уменьшаем в 0.7 раза и сдвигаем влево */
+        left: 30%;
+        transform: translate(-50%, -50%) scale(0.7) rotateY(1440deg);
+    }
 }
-/* Когда родитель получает класс .unlocked, плавно уменьшаем саму картинку внутри */
-.brawler-wrapper.unlocked .modal-brawler-image {
-    transform: scale(0.7);
-}
-.brawler-wrapper.unlocked::before{
-    transform: translate(-50%, -120%) scale(0.7);
+
+.brawler-wrapper.unlocked {
+    animation: shrinkAndMove 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    transition: none; 
 }
 
 #brawler-desc{

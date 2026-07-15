@@ -84,8 +84,17 @@ function loadGame() {
         try {
             // Превращаем строку обратно в объект
             playerProgress = JSON.parse(savedData);
+            playerProgress = {
+    score: 10000,
+    clickPower: 1333333,
+    autoclick: 0,
+    unlockedBrawlers: [],
+    lastUpgrade: 0,
+    totalClicks: 1020
+};
+saveGame();
 
-            trophyCount.textContent = playerProgress.score;
+            trophyCount.textContent = to_coroche(playerProgress.score);
             if (playerProgress.autoclick > 0){
                 timer = 1000
                 if (playerProgress.unlockedBrawlers.includes("leon")){
@@ -148,11 +157,16 @@ function updateProgressBarUI() {
     const data = calculateLevelData(playerProgress.totalClicks);
     
     const percent = (data.current / data.required) * 100;
-    levelImg.setAttribute("src", `assets/ranked/level_${data.level}.png`)
+    levelImg.setAttribute("src", `assets/ranked/level_${Math.min(data.level, 8)}.png`)
+
     if (data.level > currentLevel){
         playSound("new_level");
+        let bonus = currentLevel * CLICKS_PER_LEVEL_STEP * playerProgress.clickPower;
+        addTrophy(bonus)
+        createFloatingText(headerCenterX, headerCenterY, `+${to_coroche(bonus)}`, "bonus")
         currentLevel = data.level;
     }
+
     document.getElementById("level-title").textContent = `Уровень ${data.level}`;
     document.getElementById("progress-fill").style.width = `${percent}%`;
 }
@@ -213,7 +227,7 @@ function buyItem(itemType, value, price) {
     playSound("buy");
 
     //Визуально отмечаем сколько потратили
-    createFloatingText(headerCenterX, headerCenterY, `-${lost * -1}`)
+    createFloatingText(headerCenterX, headerCenterY, `-${to_coroche(lost * -1)}`, "waste")
 }
 
 // Обработчики кнопок магазина
@@ -263,7 +277,7 @@ clicker.addEventListener("click", function(e) {
     playSound("clicker")
     
     createTrophyBurst(centerX, centerY);
-    createFloatingText(e.clientX, e.clientY, `+${boostedClick}`);
+    createFloatingText(e.clientX, e.clientY, `+${to_coroche(boostedClick)}`);
 
     let levelPower = 1;
     if (playerProgress.unlockedBrawlers.includes("el-primo")){
@@ -271,7 +285,6 @@ clicker.addEventListener("click", function(e) {
     }
     playerProgress.totalClicks += levelPower;
     updateProgressBarUI();
-    
 });
 
 
@@ -321,7 +334,7 @@ function createTrophyBurst(x, y) {
     }
 }
 
-function createFloatingText(x, y, text) {
+function createFloatingText(x, y, text, style) {
     let exist_els = document.querySelectorAll(".float-text");
 
     if (exist_els.length > 2){
@@ -330,9 +343,7 @@ function createFloatingText(x, y, text) {
 
     const el = document.createElement('div');
     el.className = 'float-text';
-    if (text[0] === '-'){
-        el.classList.add("waste")
-    }
+    el.classList.add(style)
 
     el.textContent = text;
     el.style.left = (x - 20) + 'px';
@@ -419,11 +430,13 @@ const brawlerDescriptions = {
     "leon": "Абсолютная невидимость и мощь! Легендарный Леон позволяет автоклику зарабатывать каждые полсекунды!"
 }
 
-const probability = [0.35, 0.6, 0.8, 0.95, 1]
+const probability = [0.35, 0.6, 0.8, 0.98, 1]
 const descriptionDiv = document.getElementById("brawler-desc")
 
 megaboxUnlocking.addEventListener("click", function(e){
     e.preventDefault();
+    resetAnimation();
+    unlockingModal.removeEventListener("click", resetAnimation)
 
     megaboxImg.setAttribute("src", "assets/megabox_opened.png")
     megaboxImg.classList.remove("bouncing")
@@ -461,19 +474,20 @@ megaboxUnlocking.addEventListener("click", function(e){
 
 const brawlerWrapper = unlockingModal.querySelector(".brawler-wrapper")
 
+function resetAnimation(e){
+    unlockingModal.classList.remove("active");
+    brawlerWrapper.classList.remove("unlocked")
+    descriptionDiv.classList.remove("unlocked")
+    megaboxImg.setAttribute("src", "assets/megabox.png")
+    megaboxImg.classList.add("bouncing");
+    unlockingVideo.classList.remove("hidden");
+
+    updateBrawlerCardUI();
+}
 
 unlockingVideo.addEventListener("ended", function(){
     unlockingVideo.classList.add("hidden");
-    unlockingModal.addEventListener("click", function(e){
-        unlockingModal.classList.remove("active");
-        brawlerWrapper.classList.remove("unlocked")
-        descriptionDiv.classList.remove("unlocked")
-        megaboxImg.setAttribute("src", "assets/megabox.png")
-        megaboxImg.classList.add("bouncing");
-        unlockingVideo.classList.remove("hidden");
-
-        updateBrawlerCardUI();
-    })
+    setTimeout(() => {unlockingModal.addEventListener("click", resetAnimation)}, 1100)
 
     brawlerWrapper.classList.add("unlocked")
     descriptionDiv.classList.add("unlocked")
@@ -484,15 +498,23 @@ unlockingVideo.addEventListener("ended", function(){
  * @param {number} n - Первое слагаемое
  */
 function to_coroche(n){
-    if (n >= 1000 && n < 1000_000){
-        const res = n / 1000;
-        let shortNumber = res.toFixed(1);
-        if (shortNumber.endsWith("0")){
-            shortNumber.slice(0, -2);
-        }
-        return shortNumber + 'K';
-    } 
-    return n;
+    // Если число отрицательное, сохраняем знак для корректного списания (например, -100)
+    const sign = n < 0 ? "-" : "";
+    const num = Math.abs(n);
+
+    if (num < 1000) return sign + num;
+
+    const suffixes = ["", "K", "M", "B"];
+    
+    // Магическая формула геймдева: определяет индекс сокращения через логарифм по базе 1000
+    const i = Math.floor(Math.log10(num) / 3);
+    
+    const shortValue = num / Math.pow(1000, i);
+    
+    const finalNumber = Math.floor(shortValue * 10) / 10;
+    console.log(shortValue, finalNumber, num)
+
+    return sign + finalNumber + suffixes[i];
 }
 
 const navButtons = document.querySelectorAll('#mobile-nav button');
@@ -502,6 +524,10 @@ navButtons.forEach(btn => {
         // Убираем активный класс у всех кнопок
         navButtons.forEach(b => b.classList.remove('active'));
         this.classList.add('active');
+
+        if (modalShop.classList.contains("active")){
+            modalShop.classList.remove("active")
+        }
 
         // Показываем нужный раздел
         const section = this.dataset.section;

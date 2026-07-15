@@ -44,7 +44,7 @@
     <div id="shop-panel" class="section">
         <h2>Магазин <img src="assets/icons/shop_icon.png" alt="" id="shop-icon"> </h2>
 
-        <!-- 1. Автоклик -->
+        <!-- 1. Автоклик (+1/сек) — Дешевая основа. Игрок купит его десятки раз -->
         <div class="shop-item" data-item="autoclick-1" data-price="20">
             <div class="item-content">
                 <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
@@ -58,8 +58,8 @@
             </span>
         </div>
 
-        <!-- 2. Курсор -->
-        <div class="shop-item closed" data-item="cursor-1" data-price="100">
+        <!-- 2. Курсор (+1 к клику) — Покупается, чтобы ручной клик не отставал от автоклика -->
+        <div class="shop-item closed" data-item="cursor-1" data-price="350">
             <div class="item-content">
                 <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
                 <div class="item-info">
@@ -68,12 +68,12 @@
                 </div>
             </div>
             <span class="item-price">
-                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 100
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 350
             </span>
         </div>
 
-        <!-- 3. Кристаллический автоклик -->
-        <div class="shop-item closed" data-item="autoclick-5" data-price="500">
+        <!-- 3. Кристаллический автоклик (+5/сек) — Окупается, когда у игрока уже высокий пассивный доход -->
+        <div class="shop-item closed" data-item="autoclick-5" data-price="4500">
             <div class="item-content">
                 <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
                 <div class="item-info">
@@ -82,12 +82,12 @@
                 </div>
             </div>
             <span class="item-price">
-                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 500
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 4.5K
             </span>
         </div>
 
-        <!-- 4. Кристаллический курсор -->
-        <div class="shop-item closed" data-item="cursor-3" data-price="1000">
+        <!-- 4. Кристаллический курсор (+3 к клику) — Серьезный шаг вперед -->
+        <div class="shop-item closed" data-item="cursor-3" data-price="38000">
             <div class="item-content">
                 <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
                 <div class="item-info">
@@ -96,12 +96,12 @@
                 </div>
             </div>
             <span class="item-price">
-                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 1000
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 38K
             </span>
         </div>
 
-        <!-- 5. Гемовый автоклик -->
-        <div class="shop-item closed" data-item="autoclick-10" data-price="2000">
+        <!-- 5. Гемовый автоклик (+10/сек) — Начало космических масштабов -->
+        <div class="shop-item closed" data-item="autoclick-10" data-price="250000">
             <div class="item-content">
                 <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
                 <div class="item-info">
@@ -110,12 +110,12 @@
                 </div>
             </div>
             <span class="item-price">
-                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 2000
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 250K
             </span>
         </div>
 
-        <!-- 6. Гемовый курсор -->
-        <div class="shop-item closed" data-item="cursor-5" data-price="3000">
+        <!-- 6. Гемовый курсор (+5 к клику) — Миллионная лига -->
+        <div class="shop-item closed" data-item="cursor-5" data-price="1800000">
             <div class="item-content">
                 <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
                 <div class="item-info">
@@ -124,12 +124,12 @@
                 </div>
             </div>
             <span class="item-price">
-                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 3000
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 1.8M
             </span>
         </div>
 
-        <!-- 7. Блинговый автоклик -->
-        <div class="shop-item closed" data-item="cursor-5" data-price="5000">
+        <!-- 7. Блинговый автоклик (+20/сек) — Огромная цена под ураганный автоклик игрока -->
+        <div class="shop-item closed" data-item="autoclick-20" data-price="12000000">
             <div class="item-content">
                 <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
                 <div class="item-info">
@@ -138,12 +138,12 @@
                 </div>
             </div>
             <span class="item-price">
-                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 5000
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 12M
             </span>
         </div>
 
-        <!-- 8. Блинговый курсор -->
-        <div class="shop-item closed" data-item="cursor-10" data-price="7000">
+        <!-- 8. Блинговый курсор (+10 к клику) — Ультимативная финальная цель -->
+        <div class="shop-item closed" data-item="cursor-10" data-price="95000000">
             <div class="item-content">
                 <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
                 <div class="item-info">
@@ -152,10 +152,11 @@
                 </div>
             </div>
             <span class="item-price">
-                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 7000
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 95M
             </span>
         </div>
     </div>
+
 
     <div id="megabox-shop">
         <button id="modal-close">
@@ -220,7 +221,7 @@
         </div>
 
 
-        <button id="buy-brawler" data-price="1000">1000 <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /></button>
+        <button id="buy-brawler" data-price="10000">10K <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /></button>
     </div>
 
     <div id="megabox-unlocking">
