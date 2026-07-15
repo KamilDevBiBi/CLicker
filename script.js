@@ -84,15 +84,6 @@ function loadGame() {
         try {
             // Превращаем строку обратно в объект
             playerProgress = JSON.parse(savedData);
-            playerProgress = {
-    score: 10000,
-    clickPower: 1333333,
-    autoclick: 0,
-    unlockedBrawlers: [],
-    lastUpgrade: 0,
-    totalClicks: 1020
-};
-saveGame();
 
             trophyCount.textContent = to_coroche(playerProgress.score);
             if (playerProgress.autoclick > 0){
