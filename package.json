@@ -1,0 +1,31 @@
+{
+  "name": "clicker",
+  "version": "1.0.2",
+  "description": "Brawl Stars Clicker for Yandex Games",
+  "main": "script.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "bestzip game.zip index.html script.js style.css assets/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KamilDevBiBi/CLicker.git"
+  },
+  "keywords": [
+    "brawl-stars",
+    "clicker",
+    "yandex-games"
+  ],
+  "author": "KamilDevBiBi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KamilDevBiBi/CLicker/issues"
+  },
+  "homepage": "https://github.com/KamilDevBiBi/CLicker#readme",
+  "dependencies": {
+    "@types/ysdk": "^1.2.0"
+  },
+  "devDependencies": {
+    "bestzip": "^2.3.0"
+  }
+}

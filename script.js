@@ -62,53 +62,103 @@ let playerProgress = {
     totalClicks: 0
 };
 
-function saveGame() {
-    try {
-        // Конвертируем объект в JSON-строку
-        const progressString = JSON.stringify(playerProgress);
+/** @type {import('ysdk').SDK | null} */
+let ysdk = null;
 
+/** @type {import('ysdk').Player | null} */
+let player = null;
+
+let isYandexPlatform = false;
+
+async function initSDK(){
+    try {
+        ysdk = await YaGames.init({signed: true});
+        isYandexPlatform = true;
+
+        await initPlayer();
+        await loadGameProgress();
+
+        if (ysdk.features && ysdk.features.LoadingProgress) {
+            ysdk.features.LoadingProgress.ready();
+        }
+
+        console.log("sdk активировался")
+    } catch {
+        isYandexPlatform = false;
+        loadLocalGame();
+    }
+
+}
+
+async function initPlayer() {
+    if (!isYandexPlatform || !ysdk) return;
+    try {
+        player = await ysdk.getPlayer();
+        console.log(`Игрок ${player.getName()}`)
+    } catch {
+        console.log("Гость")
+    }
+}
+
+async function loadGameProgress(){
+    const defaults = {
+        score: 0,
+        clickPower: 1,
+        autoclick: 0,
+        unlockedBrawlers: [],
+        lastUpgrade: 0,
+        totalClicks: 0
+    }
+    let cloudData = null;
+
+    if (isYandexPlatform && player){
+        try {
+            cloudData = JSON.parse(localStorage.getItem("brawl_stars_clicker_save"));
+        } catch {
+            console.log("Нет данных")
+        }
+    }
+
+    const localDataString = localStorage.getItem("brawl_stars_clicker_save");
+    const localData = localDataString ? JSON.parse(localDataString) : null
+
+    let finalData = defaults;
+    if (cloudData && Object.keys(cloudData).length > 0){
+        finalData = cloudData;
+        if (!localData || cloudData.score > localData.score){
+            localStorage.setItem("brawl_stars_clicker_save", JSON.stringify(cloudData))
+        }
+    } else if (localData){
+        finalData = localData;
+        await player.setData(localData);
+    }
+
+    playerProgress = {...defaults, ...finalData};
+
+    applyLoadedData();
+}
+
+function loadLocalGame() {
+    const savedData = localStorage.getItem("brawl_stars_clicker_save");
+    const defaults = { score: 0, clickPower: 1, autoclick: 0, unlockedBrawlers: ["shelly"], lastUpgrade: 0, totalClicks: 0 };
+    playerProgress = savedData ? { ...defaults, ...JSON.parse(savedData) } : defaults;
+    applyLoadedData();
+}
+
+async function saveGame() {
+    try {
+        const progressString = JSON.stringify(playerProgress);
         localStorage.setItem("brawl_stars_clicker_save", progressString);
         
-        console.log("Игра успешно сохранена!");
+        if (isYandexPlatform && player){
+            await player.setData(playerProgress);
+            console.log(playerProgress)
+        }
     } catch (error) {
         // На случай, если у игрока включен режим инкогнито и localStorage заблокирован
         console.warn("Не удалось сохранить игру в localStorage:", error);
     }
 }
-
-function loadGame() {
-    // Пытаемся достать строку из памяти браузера
-    const savedData = localStorage.getItem("brawl_stars_clicker_save");
-    
-    if (savedData) {
-        try {
-            // Превращаем строку обратно в объект
-            playerProgress = JSON.parse(savedData);
-
-            trophyCount.textContent = to_coroche(playerProgress.score);
-            if (playerProgress.autoclick > 0){
-                timer = 1000
-                if (playerProgress.unlockedBrawlers.includes("leon")){
-                    timer = 500;
-                }
-                autoInterval = setInterval(addAutoTrophy, timer);
-            }
-            for (let i = 0; i <= playerProgress.lastUpgrade; i++){
-                shopItems[i].classList.remove("closed")
-            }
-
-            currentLevel = calculateLevelData(playerProgress.totalClicks).level;
-            updateProgressBarUI();
-            updateBrawlerCardUI();
-
-        } catch (error) {
-            console.error("Файл сохранений поврежден, сброс прогресса:", error);
-        }
-    } else {
-        console.log("Сохранений не найдено. Начинаем новую игру!");
-    }
-}
-
 
 const CLICKS_PER_LEVEL_STEP = 50;
 let currentLevel = 1;
@@ -120,7 +170,25 @@ const clicker = document.getElementById("coin");
 const trophyCount = document.getElementById('score');
 const brawlerCards = document.querySelectorAll(".brawler-card")
 
-loadGame();
+function applyLoadedData(){
+    trophyCount.textContent = to_coroche(playerProgress.score);
+    if (playerProgress.autoclick > 0){
+        timer = 1000
+        if (playerProgress.unlockedBrawlers.includes("leon")){
+            timer = 500;
+        }
+        autoInterval = setInterval(addAutoTrophy, timer);
+    }
+    for (let i = 0; i <= playerProgress.lastUpgrade; i++){
+        shopItems[i].classList.remove("closed")
+    }
+
+    currentLevel = calculateLevelData(playerProgress.totalClicks).level;
+    updateProgressBarUI();
+    updateBrawlerCardUI();
+}
+
+initSDK();
 checkShopButtons();
 
 function calculateLevelData(clicks) {
@@ -383,6 +451,24 @@ modalCloseBtn.addEventListener('click', function(e) {
     closeModal();
 });
 
+document.addEventListener("click", function(e) {
+    // Проверяем: если окно сейчас открыто (имеет класс active)
+    if (modalShop.classList.contains("active")) {
+        
+        // Магия геймдева: метод e.target.closest() проверяет, 
+        // был ли клик сделан внутри самого окна или по кнопке, которая его открывает
+        const isClickInsideShop = e.target.closest("#megabox-shop");
+        const isClickOnOpenBtn = e.target.closest("#megabox-card"); // Кнопка/карточка, которая открывает это окно
+
+        // Если клик был за пределами окна И не по кнопке открытия — закрываем!
+        if (!isClickInsideShop && !isClickOnOpenBtn) {
+            modalShop.classList.remove("active");
+            playSound("menu_click"); // Включаем приятный звук закрытия меню
+            console.log("Окно закрыто кликом по оверлею");
+        }
+    }
+});
+
 // Закрытие по клавише Escape
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && modalShop.classList.contains('active')) {
@@ -495,15 +581,15 @@ function to_coroche(n){
 
     if (num < 1000) return sign + num;
 
-    const suffixes = ["", "K", "M", "B"];
+    const suffixes = ["", "K", "M", "B", "T", "S", "Se", "++"];
     
     // Магическая формула геймдева: определяет индекс сокращения через логарифм по базе 1000
-    const i = Math.floor(Math.log10(num) / 3);
+    let i = Math.floor(Math.log10(num) / 3);
     
     const shortValue = num / Math.pow(1000, i);
     
     const finalNumber = Math.floor(shortValue * 10) / 10;
-    console.log(shortValue, finalNumber, num)
+    i = Math.min(i, suffixes.length)
 
     return sign + finalNumber + suffixes[i];
 }
@@ -552,3 +638,4 @@ if (window.location.search.includes("reset=true")) {
     localStorage.removeItem("brawl_stars_clicker_save");
     window.location.href = window.location.origin + window.location.pathname; // очищаем ссылку
 }
+
