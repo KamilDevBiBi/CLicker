@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:,">
+
     <script async src="/sdk.js"></script>
     <script src="script.js" defer></script>
     
@@ -17,7 +19,7 @@
                 <img src="assets/icons/trophy_icon.png" class="currency-icon header" alt="трофей"/>
                 <span id="score">0</span>
             </header>
-            <img src="assets/clicker-coin.png" alt="Монета Brawl Stars" id="coin" draggable="false">
+            <img src="assets/clicker-coin.webp" alt="Монета Brawl Stars" id="coin" draggable="false">
             <div id="progress">
                 <div class="level-info-row">
                     <span class="rank-container">
@@ -32,13 +34,25 @@
             </div>
 
             <div id="particles-container"></div>
+            <div id="boost-container">                
+                <div class="brawl-fire"></div>
+
+                <div id="boost-timer">
+                    <span id="timer-value" data-item="1">2:00</span>
+                </div>
+                <span class="hint">Усилитель кубков</span>
+            </div>
         </div>
     </div>
 
     <div id="boxes-row" class="section">
-        <div id="megabox-card">
-            <img src="assets/megabox.png" alt="megabox" class="megabox-img">
-            <span class="box-label">Мегабокс</span>
+        <div id="box-card" class="box-card">
+            <img src="assets/standart_box.png" alt="megabox" class="megabox-img">
+            <span class="box-label">Обычный ящик</span>
+        </div>
+        <div id="megabox-card" class="box-card">
+            <img src="assets/megabox.webp" alt="megabox" class="megabox-img">
+            <span class="box-label">Мегаящик</span>
         </div>
     </div>
 
@@ -159,8 +173,21 @@
     </div>
 
 
-    <div id="megabox-shop">
-        <button id="modal-close">
+    <div id="box-shop" class="shop">
+        <button id="modal-close" class="close-shop">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" width="32px" height="32px"><path d="M18.8,16l5.5-5.5c0.8-0.8,0.8-2,0-2.8l0,0C24,7.3,23.5,7,23,7c-0.5,0-1,0.2-1.4,0.6L16,13.2l-5.5-5.5  c-0.8-0.8-2.1-0.8-2.8,0C7.3,8,7,8.5,7,9.1s0.2,1,0.6,1.4l5.5,5.5l-5.5,5.5C7.3,21.9,7,22.4,7,23c0,0.5,0.2,1,0.6,1.4  C8,24.8,8.5,25,9,25c0.5,0,1-0.2,1.4-0.6l5.5-5.5l5.5,5.5c0.8,0.8,2.1,0.8,2.8,0c0.8-0.8,0.8-2.1,0-2.8L18.8,16z"/></svg>
+        </button>
+        
+        <p>Испытайте свою удачу! За 1000 кубков можно удвоить свой выигрыш, либо полностью проиграть.</p>
+        <button class="buy-box">1K <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /></button>
+    </div>
+
+    <div id="lood">
+        <p></p>
+    </div>
+
+    <div id="megabox-shop" class="shop">
+        <button id="modal-close" class="close-shop">
             <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" width="32px" height="32px"><path d="M18.8,16l5.5-5.5c0.8-0.8,0.8-2,0-2.8l0,0C24,7.3,23.5,7,23,7c-0.5,0-1,0.2-1.4,0.6L16,13.2l-5.5-5.5  c-0.8-0.8-2.1-0.8-2.8,0C7.3,8,7,8.5,7,9.1s0.2,1,0.6,1.4l5.5,5.5l-5.5,5.5C7.3,21.9,7,22.4,7,23c0,0.5,0.2,1,0.6,1.4  C8,24.8,8.5,25,9,25c0.5,0,1-0.2,1.4-0.6l5.5-5.5l5.5,5.5c0.8,0.8,2.1,0.8,2.8,0c0.8-0.8,0.8-2.1,0-2.8L18.8,16z"/></svg>
         </button>
 
@@ -216,20 +243,20 @@
                     <span class="brawler-stat">Leon</span>
                 </div>
                 <div class="brawler-back">
-                    <span>Скорость автоклика:<br><b>Раз в 0.5 сек!</b></span>
+                    <span>Скорость усиления:<br><b>Каждую минуту!</b></span>
                 </div>
             </div>
         </div>
 
 
-        <button id="buy-brawler" data-price="10000">10K <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /></button>
+        <button id="buy-brawler" class="buy-box" data-price="10">10K <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /></button>
     </div>
 
     <div id="megabox-unlocking">
         <div id="megabox-click">
             <div class="megabox-background">
                 <div class="megabox-wrapper">
-                    <img src="assets/megabox.png" alt="megabox" class="megabox-img bouncing" draggable="false">
+                    <img src="assets/megabox.webp" alt="megabox" class="megabox-img bouncing" draggable="false">
                 </div>
             </div>
             <span>ЖМИ! ЖМИ!</span>

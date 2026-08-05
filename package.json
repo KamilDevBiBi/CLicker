@@ -5,7 +5,8 @@
   "main": "script.js",
   "type": "commonjs",
   "scripts": {
-    "build": "bestzip game.zip index.html script.js style.css assets/"
+    "build": "bestzip game.zip index.html script.js style.css assets/",
+    "server": "npx @yandex-games/sdk-dev-proxy -h 127.0.0.1:5500 --app-id=545804"
   },
   "repository": {
     "type": "git",

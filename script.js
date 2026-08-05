@@ -1,5 +1,6 @@
 let audioContext;
 let soundBuffers = {};
+let isAudioReady = false;
 
 function initAudio() {
     if (!audioContext) {
@@ -14,7 +15,6 @@ async function loadSound(name, url) {
     const arrayBuffer = await response.arrayBuffer();
     const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
     soundBuffers[name] = audioBuffer;
-    console.log(`Звук "${name}" загружен`);
 }
 
 // Список звуков: имя → путь
@@ -24,7 +24,7 @@ const soundsToLoad = {
     box_open: 'assets/sounds/box_open.ogg',
     menu_click: 'assets/sounds/menu_click.ogg',
     brawler_card: 'assets/sounds/brawler_card.ogg',
-    new_level: 'assets/sounds/new_level.ogg'
+    new_level: 'assets/sounds/new_level.ogg',
 };
 
 // Загружаем все параллельно
@@ -32,6 +32,7 @@ Promise.all(
     Object.entries(soundsToLoad).map(([name, url]) => loadSound(name, url))
 ).then(() => {
     console.log('Все звуки загружены');
+    isAudioReady = true;
 }).catch(err => console.warn('Ошибка загрузки звуков:', err));
 
 function playSound(name) {
@@ -68,96 +69,63 @@ let ysdk = null;
 /** @type {import('ysdk').Player | null} */
 let player = null;
 
-let isYandexPlatform = false;
-
-async function initSDK(){
+async function initSDK() {
     try {
-        ysdk = await YaGames.init({signed: true});
-        isYandexPlatform = true;
-
-        await initPlayer();
-        await loadGameProgress();
-
-        if (ysdk.features && ysdk.features.LoadingProgress) {
-            ysdk.features.LoadingProgress.ready();
-        }
-
-        console.log("sdk активировался")
-    } catch {
-        isYandexPlatform = false;
-        loadLocalGame();
-    }
-
-}
-
-async function initPlayer() {
-    if (!isYandexPlatform || !ysdk) return;
-    try {
+        ysdk = await YaGames.init();
         player = await ysdk.getPlayer();
-        console.log(`Игрок ${player.getName()}`)
+
+        await loadPlayerProgress();
     } catch {
-        console.log("Гость")
+        loadLocalStorage();
+        console.log("Игра запущена не на Яндекс Играх")
     }
 }
 
-async function loadGameProgress(){
-    const defaults = {
-        score: 0,
-        clickPower: 1,
-        autoclick: 0,
-        unlockedBrawlers: [],
-        lastUpgrade: 0,
-        totalClicks: 0
-    }
-    let cloudData = null;
-
-    if (isYandexPlatform && player){
-        try {
-            cloudData = JSON.parse(localStorage.getItem("brawl_stars_clicker_save"));
-        } catch {
-            console.log("Нет данных")
-        }
+async function loadPlayerProgress(){
+    const numericData = await player.getStats();
+    const arrayData = await player.getData(["unlockedBrawlers"]);
+    const cloudData = {
+        ...numericData,
+        unlockedBrawlers: (arrayData && arrayData.unlockedBrawlers) ? arrayData.unlockedBrawlers : []
     }
 
-    const localDataString = localStorage.getItem("brawl_stars_clicker_save");
-    const localData = localDataString ? JSON.parse(localDataString) : null
+    const localJSON = localStorage.getItem("brawl_stars_clicker_save");
+    const localData = JSON.parse(localJSON)
 
-    let finalData = defaults;
-    if (cloudData && Object.keys(cloudData).length > 0){
-        finalData = cloudData;
-        if (!localData || cloudData.score > localData.score){
-            localStorage.setItem("brawl_stars_clicker_save", JSON.stringify(cloudData))
-        }
+    if (cloudData){
+        playerProgress = cloudData;
     } else if (localData){
-        finalData = localData;
-        await player.setData(localData);
+        playerProgress = localData;
     }
 
-    playerProgress = {...defaults, ...finalData};
+    console.log(playerProgress)
 
     applyLoadedData();
 }
 
-function loadLocalGame() {
-    const savedData = localStorage.getItem("brawl_stars_clicker_save");
-    const defaults = { score: 0, clickPower: 1, autoclick: 0, unlockedBrawlers: ["shelly"], lastUpgrade: 0, totalClicks: 0 };
-    playerProgress = savedData ? { ...defaults, ...JSON.parse(savedData) } : defaults;
+function saveGame() { 
+    try { 
+        console.log(playerProgress)
+        const progressString = JSON.stringify(playerProgress); 
+        localStorage.setItem("brawl_stars_clicker_save", progressString); 
+    } catch (error) { 
+        console.warn("Ошибка сохранения:", error); 
+    } 
+}
+
+function loadLocalStorage(){
+    const localJSON = localStorage.getItem("brawl_stars_clicker_save");
+    const localData = JSON.parse(localJSON)
+    if (localData){
+        playerProgress = localData;
+    }
+
     applyLoadedData();
 }
 
-async function saveGame() {
-    try {
-        const progressString = JSON.stringify(playerProgress);
-        localStorage.setItem("brawl_stars_clicker_save", progressString);
-        
-        if (isYandexPlatform && player){
-            await player.setData(playerProgress);
-            console.log(playerProgress)
-        }
-    } catch (error) {
-        // На случай, если у игрока включен режим инкогнито и localStorage заблокирован
-        console.warn("Не удалось сохранить игру в localStorage:", error);
-    }
+async function SDKsaveGame(){
+    const {unlockedBrawlers, ...numericData} = playerProgress;
+    await player.setStats(numericData).then(()=>{console.log(playerProgress)});
 }
 
 const CLICKS_PER_LEVEL_STEP = 50;
@@ -173,11 +141,7 @@ const brawlerCards = document.querySelectorAll(".brawler-card")
 function applyLoadedData(){
     trophyCount.textContent = to_coroche(playerProgress.score);
     if (playerProgress.autoclick > 0){
-        timer = 1000
-        if (playerProgress.unlockedBrawlers.includes("leon")){
-            timer = 500;
-        }
-        autoInterval = setInterval(addAutoTrophy, timer);
+        autoInterval = setInterval(addAutoTrophy, 1000);
     }
     for (let i = 0; i <= playerProgress.lastUpgrade; i++){
         shopItems[i].classList.remove("closed")
@@ -186,10 +150,16 @@ function applyLoadedData(){
     currentLevel = calculateLevelData(playerProgress.totalClicks).level;
     updateProgressBarUI();
     updateBrawlerCardUI();
+
+    if (ysdk && player){
+        if (isAudioReady){
+            let updateDataInt = setInterval(SDKsaveGame, 3000)
+            ysdk.features.LoadingAPI.ready();
+        }
+    }
 }
 
 initSDK();
-checkShopButtons();
 
 function calculateLevelData(clicks) {
     let level = 1;
@@ -248,7 +218,7 @@ function checkShopButtons() {
 
 function addAutoTrophy() {
     playerProgress.score += playerProgress.autoclick;
-    saveGame();
+    // saveGame();
 
     trophyCount.textContent = to_coroche(playerProgress.score);
     checkShopButtons();
@@ -299,7 +269,6 @@ shopItems.forEach((item, index)  => {
             const nextItem = shopItems[index + 1];
             nextItem.classList.remove("closed")
             playerProgress.lastUpgrade = Math.max(playerProgress.lastUpgrade, index + 1);
-            saveGame();
         }
 
         const itemData = this.dataset.item;
@@ -320,6 +289,7 @@ const centerY = ClickerRect.top + ClickerRect.height / 2;
 clicker.addEventListener("click", function(e) {
     e.preventDefault();
 
+    let textClass = undefined;
     let boostedClick = playerProgress.clickPower;
     if (playerProgress.unlockedBrawlers.includes("shelly")){
         if (playerProgress.totalClicks % 10 === 0){
@@ -331,12 +301,17 @@ clicker.addEventListener("click", function(e) {
             boostedClick *= 5;
         }
     }
+    if (trophyRainInt){
+        boostedClick *= 2;
+        textClass = "rain"
+    }
+
     addTrophy(boostedClick)
     
     playSound("clicker")
     
     createTrophyBurst(centerX, centerY);
-    createFloatingText(e.clientX, e.clientY, `+${to_coroche(boostedClick)}`);
+    createFloatingText(e.clientX, e.clientY, `+${to_coroche(boostedClick)}`, textClass);
 
     let levelPower = 1;
     if (playerProgress.unlockedBrawlers.includes("el-primo")){
@@ -412,28 +387,81 @@ function createFloatingText(x, y, text, style) {
     el.addEventListener('animationend', () => el.remove());
 }
 
+const boostContainer = document.getElementById("boost-container");
+const timerValue = document.getElementById("timer-value");
+const delayTime = 120
+let trophyRainInt = null;
+let updateBoostTimer = setInterval(() => {
+    let newTimer = Number(timerValue.dataset.item) - 1;
+    
+    if (newTimer === -1) {
+        // Переключаем класс на главном контейнере!
+        boostContainer.classList.toggle("active");
+        
+        if (boostContainer.classList.contains("active")) {
+            newTimer = 10;
+            trophyRainInt = setInterval(trophyRain, 300);
+        } else {
+            newTimer = 120;
+            clearInterval(trophyRainInt)
+            trophyRainInt = null;
+        }
+    }
+    
+    timerValue.dataset.item = newTimer;
+    
+    const minutes = Math.floor(newTimer / 60);
+    const seconds = String(newTimer % 60).padStart(2, '0');
+    timerValue.textContent = `${minutes}:${seconds}`;
+}, 1000);
+
+const mainPage = document.getElementById("main-content")
+function trophyRain(){
+    const trophy = document.createElement("img")
+    trophy.src = trophy_IMG;
+    trophy.alt = '🏆'
+
+    trophy.style.left = Math.random() * (mainPage.clientWidth - 80) + 'px'
+
+    trophy.style.setProperty("--lifetime", Math.random() * 2 + 1 + 's')
+    trophy.style.setProperty("--ty", Math.random() * (document.body.clientHeight - 280) + 200 + 'px')
+    trophy.style.setProperty("--angle", Math.random() * 720 - 360 + 'deg')
+
+    trophy.classList.add("rainy");
+
+    mainPage.appendChild(trophy);
+
+    trophy.addEventListener("animationend", function(){
+        trophy.remove();
+    })
+}
 
 // ===== Модальное окно магазина бравлеров =====
-const modalShop = document.getElementById('megabox-shop');
-const modalCloseBtn = document.getElementById('modal-close');
-const megaboxCard = document.getElementById('megabox-card');
-const brawlerBtn = document.getElementById("buy-brawler")
+const boxCards = document.querySelectorAll(".box-card");
+const boxShops = document.querySelectorAll('.shop');
+const buyBoxes = document.querySelectorAll(".buy-box")
 
-megaboxCard.addEventListener('click', function(){
-    modalShop.classList.add('active');
-    document.body.style.overflow = 'hidden'; // запрещаем скролл страницы
+boxCards.forEach((btn, idx) => {
+    btn.addEventListener('click', function(){
+        boxShops[idx].classList.add('active');
+        document.body.style.overflow = 'hidden'; // запрещаем скролл страницы
 
-    playSound("menu_click");
-    if (parseInt(brawlerBtn.dataset.price) > playerProgress.score){
-        brawlerBtn.classList.add("disabled")
-    } else if (brawlerBtn.classList.contains("disabled")) {
-        brawlerBtn.classList.remove("disabled")
-    }
-});
+        playSound("menu_click");
+
+        buyBoxes.forEach((buyBtn) => {
+            if (parseInt(buyBtn.dataset.price) > playerProgress.score){
+                buyBtn.classList.add("disabled")
+            } else if (buyBtn.classList.contains("disabled")) {
+                buyBtn.classList.remove("disabled")
+            }
+        })
+
+    });
+})
 
 // Функция закрытия модального окна
-function closeModal() {
-    modalShop.classList.remove('active');
+function closeShop(idx) {
+    boxShops[idx].classList.remove('active');
     document.body.style.overflow = ''; // возвращаем скролл
 
     setTimeout(() => {
@@ -445,28 +473,31 @@ function closeModal() {
     playSound("menu_click");
 }
 
-// Закрытие по клику на крестик
-modalCloseBtn.addEventListener('click', function(e) {
-    e.stopPropagation(); // чтобы не закрыть дважды
-    closeModal();
-});
+const modalCloseBtn = document.querySelectorAll('.close-shop');
+modalCloseBtn.forEach((btn, idx) => {
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation(); // чтобы не закрыть дважды
+        closeShop(idx);
+    });
+})
 
 document.addEventListener("click", function(e) {
-    // Проверяем: если окно сейчас открыто (имеет класс active)
-    if (modalShop.classList.contains("active")) {
-        
-        // Магия геймдева: метод e.target.closest() проверяет, 
-        // был ли клик сделан внутри самого окна или по кнопке, которая его открывает
-        const isClickInsideShop = e.target.closest("#megabox-shop");
-        const isClickOnOpenBtn = e.target.closest("#megabox-card"); // Кнопка/карточка, которая открывает это окно
+    boxShops.forEach((shop, idx) => {
+        if (shop.classList.contains("active")) {
+            
+            // Магия геймдева: метод e.target.closest() проверяет, 
+            // был ли клик сделан внутри самого окна или по кнопке, которая его открывает
+            console.log(shop.id, boxCards[idx].id)
+            const isClickInsideShop = e.target.closest(`#${shop.id}`);
+            const isClickOnOpenBtn = e.target.closest(`#${boxCards[idx].id}`); // Кнопка/карточка, которая открывает это окно
 
-        // Если клик был за пределами окна И не по кнопке открытия — закрываем!
-        if (!isClickInsideShop && !isClickOnOpenBtn) {
-            modalShop.classList.remove("active");
-            playSound("menu_click"); // Включаем приятный звук закрытия меню
-            console.log("Окно закрыто кликом по оверлею");
+            // Если клик был за пределами окна И не по кнопке открытия — закрываем!
+            if (!isClickInsideShop && !isClickOnOpenBtn) {
+                shop.classList.remove("active");
+                playSound("menu_click"); // Включаем приятный звук закрытия меню
+            }
         }
-    }
+    })
 });
 
 // Закрытие по клавише Escape
@@ -483,14 +514,36 @@ brawlerCards.forEach(card => {
     })
 })
 
+// Открытие обычного ящика
+const loodContainer = document.getElementById("lood")
+const loodInfo = loodContainer.querySelector("p")
+buyBoxes[0].addEventListener('click', function(e){
+    if (parseInt(this.dataset.price) > playerProgress.score){return; }
+    loodContainer.classList.add("active")
+    boxShops[0].classList.remove("active")
+    playSound("buy")
+
+    if (Math.random() < 0.5){
+        loodInfo.textContent = "Неудача! -1000 кубков"
+        addTrophy(-1000)
+    } else{
+        loodInfo.textContent = "Успех! +2000 кубков"
+        addTrophy(1000)
+    }
+})
+
+loodContainer.addEventListener("click", function(e){
+    e.preventDefault()
+    loodContainer.classList.remove("active")
+})
 // Открытие мегаящика
 const megaboxUnlocking = document.getElementById("megabox-unlocking");
-brawlerBtn.addEventListener('click', function(e){
-    if (parseInt(brawlerBtn.dataset.price) > playerProgress.score){return; }
+buyBoxes[1].addEventListener('click', function(e){
+    if (parseInt(this.dataset.price) > playerProgress.score){return; }
     megaboxUnlocking.classList.add("active");
     playSound("buy");
 
-    addTrophy(-1 * parseInt(brawlerBtn.dataset.price) )
+    addTrophy(-1 * parseInt(this.dataset.price) )
 });
 
 const megaboxImg = megaboxUnlocking.querySelector(".megabox-img");
@@ -504,7 +557,7 @@ const brawlerDescriptions = {
     "el-primo": "Го го го! Мощный мексиканский боец сокрушает рекорды: удваивает скорость поднятия уровня",
     "bibi": "Разгон на полную! Своей бейсбольной битой Биби дарит шанс 15% умножить силу клику в 5 раз",
     "mortis": "Бесконечная ульта Мортиса! Летучие мыши крадут цены в магазине и возвращают кэшбек 10% при покупке",
-    "leon": "Абсолютная невидимость и мощь! Легендарный Леон позволяет автоклику зарабатывать каждые полсекунды!"
+    "leon": "Абсолютная невидимость и мощь! Легендарный Леон уменьшает время усиления кубков до 1 минуты"
 }
 
 const probability = [0.35, 0.6, 0.8, 0.98, 1]
@@ -515,7 +568,6 @@ megaboxUnlocking.addEventListener("click", function(e){
     resetAnimation();
     unlockingModal.removeEventListener("click", resetAnimation)
 
-    megaboxImg.setAttribute("src", "assets/megabox_opened.png")
     megaboxImg.classList.remove("bouncing")
 
     playSound("box_open");
@@ -533,12 +585,9 @@ megaboxUnlocking.addEventListener("click", function(e){
     }
 
     const brawlerName = brawlers[brawler_idx];
-    if (brawlerName === "leon" && !playerProgress.unlockedBrawlers.includes("leon")){
-        clearInterval(autoInterval);
-        autoInterval = setInterval(addAutoTrophy, 500)
-    }
     if (!playerProgress.unlockedBrawlers.includes(brawlerName)){
         playerProgress.unlockedBrawlers.push(brawlerName);
+        saveGame();
     }
     openedBrawler.setAttribute("src", `assets/brawler-models/${brawlerName}_model.png`)
     openedBrawler.setAttribute("alt", `${brawlerName}`)
@@ -602,10 +651,11 @@ navButtons.forEach(btn => {
         navButtons.forEach(b => b.classList.remove('active'));
         this.classList.add('active');
 
-        if (modalShop.classList.contains("active")){
-            modalShop.classList.remove("active")
-        }
-
+        boxShops.forEach((shop) => {
+            if (shop.classList.contains("active")){
+                shop.classList.remove("active")
+            }
+        }) 
         // Показываем нужный раздел
         const section = this.dataset.section;
         switchSection(section);
@@ -617,6 +667,11 @@ navButtons.forEach(btn => {
 
 function switchSection(section) {
     // Скрываем все секции
+    const flyingTrophies = [...document.querySelectorAll(".rainy"), ...document.querySelectorAll(".trophy-particle")];
+    
+    // Насильно удаляем их из памяти, чтобы они не зависали в display:none
+    flyingTrophies.forEach(trophy => trophy.remove());
+
     document.querySelectorAll('.section').forEach(el => el.style.display = 'none');
     
     // Показываем нужную
