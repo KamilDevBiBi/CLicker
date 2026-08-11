@@ -8,7 +8,7 @@
     <link rel="icon" href="data:,">
 
     <script async src="/sdk.js"></script>
-    <script src="script.js" defer></script>
+    <script src="script.js" defer onload="initSDK()"></script>
     
     <title>Document</title>
 </head>
@@ -16,7 +16,7 @@
     <div id="main-content" class="section">
         <div id="main-clicker">
             <header id="clicker-header">
-                <img src="assets/icons/trophy_icon.png" class="currency-icon header" alt="трофей"/>
+                <img src="assets/icons/trophy_icon.png" class="currency-icon header" alt="трофей" draggable="false"/>
                 <span id="score">0</span>
             </header>
             <img src="assets/clicker-coin.webp" alt="Монета Brawl Stars" id="coin" draggable="false">
@@ -33,34 +33,69 @@
                 <span id="level-title">Уровень 1</span>
             </div>
 
-            <div id="particles-container"></div>
+            <div class="adv-container">
+                <button id="free-trophy-adv" class="adv-btn">
+                    УДВОИТЬ ТРОФЕИ
+                    <div class="adv-background">
+                        <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="31px" height="31px" viewBox="0 0 512.000000 512.000000" preserveAspectRatio="xMidYMid meet">
+                            <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" fill="#ff0000" stroke="none">
+                            <path d="M690 4751 c-337 -72 -601 -337 -671 -676 -18 -85 -19 -165 -19 -1506 0 -1229 2 -1428 15 -1504 57 -323 289 -578 620 -682 l90 -28 1825 0 c2080 0 1882 -9 2088 92 218 106 371 290 449 540 l28 88 0 1480 c0 1416 -1 1483 -19 1549 -94 346 -355 592 -691 651 -76 13 -317 15 -1859 14 -1664 0 -1776 -1 -1856 -18z m191 -274 c59 -39 69 -73 69 -230 0 -232 -16 -247 -254 -247 -142 0 -162 2 -191 20 -52 32 -65 79 -65 233 0 150 11 186 69 224 32 21 45 23 186 23 141 0 154 -2 186 -23z m928 5 c60 -32 71 -67 71 -230 0 -161 -9 -196 -60 -232 -27 -19 -48 -23 -139 -28 -59 -2 -134 -1 -167 3 -49 6 -64 13 -96 45 l-38 38 0 163 c0 246 11 258 250 259 122 0 151 -3 179 -18z m926 4 c19 -8 44 -30 55 -48 19 -30 20 -46 18 -201 l-3 -169 -36 -33 c-45 -41 -99 -50 -259 -43 -120 5 -147 16 -180 71 -18 28 -20 51 -20 187 0 175 8 202 71 233 46 22 302 24 354 3z m929 0 c18 -7 43 -27 55 -44 19 -28 21 -42 21 -197 l0 -167 -38 -38 c-32 -32 -47 -39 -96 -45 -33 -4 -108 -5 -168 -3 -97 5 -111 8 -143 32 -49 38 -57 76 -53 248 l3 147 30 31 c17 18 39 36 50 40 35 15 302 12 339 -4z m943 -6 c62 -38 68 -57 68 -230 0 -144 -2 -158 -23 -191 -34 -55 -66 -64 -232 -64 -128 0 -149 2 -180 20 -60 35 -70 70 -70 235 0 162 9 192 72 230 29 18 51 20 183 20 131 0 154 -3 182 -20z m-2406 -896 c85 -24 1176 -656 1239 -718 174 -170 170 -454 -9 -618 -77 -70 -1146 -688 -1235 -713 -89 -26 -205 -17 -291 23 -117 55 -208 163 -241 286 -20 75 -20 1357 0 1432 39 148 171 280 313 313 61 14 162 12 224 -5z m-1315 -2483 c53 -32 64 -71 64 -228 0 -157 -10 -191 -69 -230 -32 -21 -45 -23 -185 -23 -166 0 -195 8 -233 67 -27 40 -32 286 -8 350 29 75 52 83 240 83 139 0 164 -3 191 -19z m932 -1 c55 -34 64 -71 60 -246 l-3 -154 -38 -37 -37 -38 -148 -3 c-171 -4 -211 4 -247 52 -24 32 -25 37 -25 201 l0 167 39 39 39 39 163 0 c147 0 167 -2 197 -20z m936 -1 c50 -39 56 -65 56 -231 0 -232 -16 -248 -249 -248 -162 0 -199 10 -231 62 -19 30 -20 46 -18 201 l3 169 37 34 38 34 169 0 c156 0 170 -2 195 -21z m947 -18 l39 -39 0 -163 c0 -250 -13 -262 -266 -257 l-154 3 -37 38 -38 37 -3 142 c-4 177 0 204 45 245 l34 33 171 0 170 0 39 -39z m909 24 c56 -29 65 -62 65 -235 0 -173 -6 -192 -68 -230 -28 -17 -51 -20 -182 -20 -132 0 -154 2 -183 20 -63 38 -72 68 -72 228 0 238 14 252 253 252 122 0 165 -3 187 -15z"/>
+                            </g>
+                        </svg>
+                    </div>
+                </button>
+                <button class="adv-btn free-megabox-adv">
+                    + МЕГАЯЩИК
+                    <div class="adv-background">
+                        <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="31px" height="31px" viewBox="0 0 512.000000 512.000000" preserveAspectRatio="xMidYMid meet">
+                            <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" fill="#ff0000" stroke="none">
+                            <path d="M690 4751 c-337 -72 -601 -337 -671 -676 -18 -85 -19 -165 -19 -1506 0 -1229 2 -1428 15 -1504 57 -323 289 -578 620 -682 l90 -28 1825 0 c2080 0 1882 -9 2088 92 218 106 371 290 449 540 l28 88 0 1480 c0 1416 -1 1483 -19 1549 -94 346 -355 592 -691 651 -76 13 -317 15 -1859 14 -1664 0 -1776 -1 -1856 -18z m191 -274 c59 -39 69 -73 69 -230 0 -232 -16 -247 -254 -247 -142 0 -162 2 -191 20 -52 32 -65 79 -65 233 0 150 11 186 69 224 32 21 45 23 186 23 141 0 154 -2 186 -23z m928 5 c60 -32 71 -67 71 -230 0 -161 -9 -196 -60 -232 -27 -19 -48 -23 -139 -28 -59 -2 -134 -1 -167 3 -49 6 -64 13 -96 45 l-38 38 0 163 c0 246 11 258 250 259 122 0 151 -3 179 -18z m926 4 c19 -8 44 -30 55 -48 19 -30 20 -46 18 -201 l-3 -169 -36 -33 c-45 -41 -99 -50 -259 -43 -120 5 -147 16 -180 71 -18 28 -20 51 -20 187 0 175 8 202 71 233 46 22 302 24 354 3z m929 0 c18 -7 43 -27 55 -44 19 -28 21 -42 21 -197 l0 -167 -38 -38 c-32 -32 -47 -39 -96 -45 -33 -4 -108 -5 -168 -3 -97 5 -111 8 -143 32 -49 38 -57 76 -53 248 l3 147 30 31 c17 18 39 36 50 40 35 15 302 12 339 -4z m943 -6 c62 -38 68 -57 68 -230 0 -144 -2 -158 -23 -191 -34 -55 -66 -64 -232 -64 -128 0 -149 2 -180 20 -60 35 -70 70 -70 235 0 162 9 192 72 230 29 18 51 20 183 20 131 0 154 -3 182 -20z m-2406 -896 c85 -24 1176 -656 1239 -718 174 -170 170 -454 -9 -618 -77 -70 -1146 -688 -1235 -713 -89 -26 -205 -17 -291 23 -117 55 -208 163 -241 286 -20 75 -20 1357 0 1432 39 148 171 280 313 313 61 14 162 12 224 -5z m-1315 -2483 c53 -32 64 -71 64 -228 0 -157 -10 -191 -69 -230 -32 -21 -45 -23 -185 -23 -166 0 -195 8 -233 67 -27 40 -32 286 -8 350 29 75 52 83 240 83 139 0 164 -3 191 -19z m932 -1 c55 -34 64 -71 60 -246 l-3 -154 -38 -37 -37 -38 -148 -3 c-171 -4 -211 4 -247 52 -24 32 -25 37 -25 201 l0 167 39 39 39 39 163 0 c147 0 167 -2 197 -20z m936 -1 c50 -39 56 -65 56 -231 0 -232 -16 -248 -249 -248 -162 0 -199 10 -231 62 -19 30 -20 46 -18 201 l3 169 37 34 38 34 169 0 c156 0 170 -2 195 -21z m947 -18 l39 -39 0 -163 c0 -250 -13 -262 -266 -257 l-154 3 -37 38 -38 37 -3 142 c-4 177 0 204 45 245 l34 33 171 0 170 0 39 -39z m909 24 c56 -29 65 -62 65 -235 0 -173 -6 -192 -68 -230 -28 -17 -51 -20 -182 -20 -132 0 -154 2 -183 20 -63 38 -72 68 -72 228 0 238 14 252 253 252 122 0 165 -3 187 -15z"/>
+                            </g>
+                        </svg>
+                    </div>
+                </button>
+            </div>
+
             <div id="boost-container">                
                 <div class="brawl-fire"></div>
 
                 <div id="boost-timer">
-                    <span id="timer-value" data-item="1">2:00</span>
+                    <span id="timer-value" data-item="120">2:00</span>
                 </div>
                 <span class="hint">Усилитель кубков</span>
             </div>
         </div>
     </div>
 
-    <div id="boxes-row" class="section">
-        <div id="box-card" class="box-card">
-            <img src="assets/standart_box.png" alt="megabox" class="megabox-img">
-            <span class="box-label">Обычный ящик</span>
+    <div id="boxes-container" class="section">
+        <div id="boxes-row">
+            <div id="box-card" class="box-card">
+                <img src="assets/standart_box.png" alt="megabox" class="megabox-img">
+                <span class="box-label">Обычный ящик</span>
+            </div>
+            <div id="megabox-card" class="box-card">
+                <img src="assets/megabox.webp" alt="megabox" class="megabox-img">
+                <span class="box-label">Мегаящик</span>
+            </div>
         </div>
-        <div id="megabox-card" class="box-card">
-            <img src="assets/megabox.webp" alt="megabox" class="megabox-img">
-            <span class="box-label">Мегаящик</span>
-        </div>
+
+        <button class="adv-btn free-megabox-adv mobile">
+            + МЕГАЯЩИК
+            <div class="adv-background">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="31px" height="31px" viewBox="0 0 512.000000 512.000000" preserveAspectRatio="xMidYMid meet">
+                    <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" fill="#ff0000" stroke="none">
+                    <path d="M690 4751 c-337 -72 -601 -337 -671 -676 -18 -85 -19 -165 -19 -1506 0 -1229 2 -1428 15 -1504 57 -323 289 -578 620 -682 l90 -28 1825 0 c2080 0 1882 -9 2088 92 218 106 371 290 449 540 l28 88 0 1480 c0 1416 -1 1483 -19 1549 -94 346 -355 592 -691 651 -76 13 -317 15 -1859 14 -1664 0 -1776 -1 -1856 -18z m191 -274 c59 -39 69 -73 69 -230 0 -232 -16 -247 -254 -247 -142 0 -162 2 -191 20 -52 32 -65 79 -65 233 0 150 11 186 69 224 32 21 45 23 186 23 141 0 154 -2 186 -23z m928 5 c60 -32 71 -67 71 -230 0 -161 -9 -196 -60 -232 -27 -19 -48 -23 -139 -28 -59 -2 -134 -1 -167 3 -49 6 -64 13 -96 45 l-38 38 0 163 c0 246 11 258 250 259 122 0 151 -3 179 -18z m926 4 c19 -8 44 -30 55 -48 19 -30 20 -46 18 -201 l-3 -169 -36 -33 c-45 -41 -99 -50 -259 -43 -120 5 -147 16 -180 71 -18 28 -20 51 -20 187 0 175 8 202 71 233 46 22 302 24 354 3z m929 0 c18 -7 43 -27 55 -44 19 -28 21 -42 21 -197 l0 -167 -38 -38 c-32 -32 -47 -39 -96 -45 -33 -4 -108 -5 -168 -3 -97 5 -111 8 -143 32 -49 38 -57 76 -53 248 l3 147 30 31 c17 18 39 36 50 40 35 15 302 12 339 -4z m943 -6 c62 -38 68 -57 68 -230 0 -144 -2 -158 -23 -191 -34 -55 -66 -64 -232 -64 -128 0 -149 2 -180 20 -60 35 -70 70 -70 235 0 162 9 192 72 230 29 18 51 20 183 20 131 0 154 -3 182 -20z m-2406 -896 c85 -24 1176 -656 1239 -718 174 -170 170 -454 -9 -618 -77 -70 -1146 -688 -1235 -713 -89 -26 -205 -17 -291 23 -117 55 -208 163 -241 286 -20 75 -20 1357 0 1432 39 148 171 280 313 313 61 14 162 12 224 -5z m-1315 -2483 c53 -32 64 -71 64 -228 0 -157 -10 -191 -69 -230 -32 -21 -45 -23 -185 -23 -166 0 -195 8 -233 67 -27 40 -32 286 -8 350 29 75 52 83 240 83 139 0 164 -3 191 -19z m932 -1 c55 -34 64 -71 60 -246 l-3 -154 -38 -37 -37 -38 -148 -3 c-171 -4 -211 4 -247 52 -24 32 -25 37 -25 201 l0 167 39 39 39 39 163 0 c147 0 167 -2 197 -20z m936 -1 c50 -39 56 -65 56 -231 0 -232 -16 -248 -249 -248 -162 0 -199 10 -231 62 -19 30 -20 46 -18 201 l3 169 37 34 38 34 169 0 c156 0 170 -2 195 -21z m947 -18 l39 -39 0 -163 c0 -250 -13 -262 -266 -257 l-154 3 -37 38 -38 37 -3 142 c-4 177 0 204 45 245 l34 33 171 0 170 0 39 -39z m909 24 c56 -29 65 -62 65 -235 0 -173 -6 -192 -68 -230 -28 -17 -51 -20 -182 -20 -132 0 -154 2 -183 20 -63 38 -72 68 -72 228 0 238 14 252 253 252 122 0 165 -3 187 -15z"/>
+                    </g>
+                </svg>
+            </div>
+        </button>
     </div>
 
     <div id="shop-panel" class="section">
         <h2>Магазин <img src="assets/icons/shop_icon.png" alt="" id="shop-icon"> </h2>
 
         <!-- 1. Автоклик (+1/сек) — Дешевая основа. Игрок купит его десятки раз -->
-        <div class="shop-item" data-item="autoclick-1" data-price="20">
+        <div class="shop-item" data-item="autoclick-1" data-price="20" draggable="false">
             <div class="item-content">
                 <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
                 <div class="item-info">
@@ -74,7 +109,7 @@
         </div>
 
         <!-- 2. Курсор (+1 к клику) — Покупается, чтобы ручной клик не отставал от автоклика -->
-        <div class="shop-item closed" data-item="cursor-1" data-price="350">
+        <div class="shop-item closed" data-item="cursor-1" data-price="150">
             <div class="item-content">
                 <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
                 <div class="item-info">
@@ -83,12 +118,12 @@
                 </div>
             </div>
             <span class="item-price">
-                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 350
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 150
             </span>
         </div>
 
         <!-- 3. Кристаллический автоклик (+5/сек) — Окупается, когда у игрока уже высокий пассивный доход -->
-        <div class="shop-item closed" data-item="autoclick-25" data-price="4500">
+        <div class="shop-item closed" data-item="autoclick-25" data-price="2000">
             <div class="item-content">
                 <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
                 <div class="item-info">
@@ -97,12 +132,12 @@
                 </div>
             </div>
             <span class="item-price">
-                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 4.5K
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 2K
             </span>
         </div>
 
         <!-- 4. Кристаллический курсор (+3 к клику) — Серьезный шаг вперед -->
-        <div class="shop-item closed" data-item="cursor-50" data-price="38000">
+        <div class="shop-item closed" data-item="cursor-50" data-price="15000">
             <div class="item-content">
                 <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
                 <div class="item-info">
@@ -111,12 +146,12 @@
                 </div>
             </div>
             <span class="item-price">
-                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 38K
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 15K
             </span>
         </div>
 
         <!-- 5. Гемовый автоклик (+10/сек) — Начало космических масштабов -->
-        <div class="shop-item closed" data-item="autoclick-2000" data-price="250000">
+        <div class="shop-item closed" data-item="autoclick-2000" data-price="50000">
             <div class="item-content">
                 <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
                 <div class="item-info">
@@ -125,12 +160,12 @@
                 </div>
             </div>
             <span class="item-price">
-                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 250K
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 50K
             </span>
         </div>
 
         <!-- 6. Гемовый курсор (+5 к клику) — Миллионная лига -->
-        <div class="shop-item closed" data-item="cursor-5000" data-price="1800000">
+        <div class="shop-item closed" data-item="cursor-5000" data-price="200000">
             <div class="item-content">
                 <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
                 <div class="item-info">
@@ -139,12 +174,12 @@
                 </div>
             </div>
             <span class="item-price">
-                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 1.8M
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 200К
             </span>
         </div>
 
         <!-- 7. Блинговый автоклик (+20/сек) — Огромная цена под ураганный автоклик игрока -->
-        <div class="shop-item closed" data-item="autoclick-50000" data-price="12000000">
+        <div class="shop-item closed" data-item="autoclick-50000" data-price="1000000">
             <div class="item-content">
                 <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
                 <div class="item-info">
@@ -153,12 +188,12 @@
                 </div>
             </div>
             <span class="item-price">
-                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 12M
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 1M
             </span>
         </div>
 
         <!-- 8. Блинговый курсор (+10 к клику) — Ультимативная финальная цель -->
-        <div class="shop-item closed" data-item="cursor-100000" data-price="95000000">
+        <div class="shop-item closed" data-item="cursor-100000" data-price="50000000">
             <div class="item-content">
                 <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
                 <div class="item-info">
@@ -167,26 +202,57 @@
                 </div>
             </div>
             <span class="item-price">
-                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 95M
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 50M
             </span>
         </div>
+
+        <div class="shop-item closed" data-item="autoclick-500000" data-price="500000000">
+            <div class="item-content">
+                <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
+                <div class="item-info">
+                    <span class="item-name">Легендарный автоклик</span>
+                    <span class="item-effect">+500K трофеев/сек</span>
+                </div>
+            </div>
+            <span class="item-price">
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 500M
+            </span>
+        </div>
+
+        <!-- 8. Блинговый курсор (+10 к клику) — Ультимативная финальная цель -->
+        <div class="shop-item closed" data-item="cursor-1000000" data-price="1000000000">
+            <div class="item-content">
+                <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
+                <div class="item-info">
+                    <span class="item-name">Легендарный курсор</span>
+                    <span class="item-effect">+1М за клик</span>
+                </div>
+            </div>
+            <span class="item-price">
+                <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /> 1B
+            </span>
+        </div>
+        
     </div>
 
 
-    <div id="box-shop" class="shop">
+    <div id="box-shop" class="shop" style="--bg-color: linear-gradient(145deg, #ff9a3c, #e66e2e)">
         <button id="modal-close" class="close-shop">
             <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" width="32px" height="32px"><path d="M18.8,16l5.5-5.5c0.8-0.8,0.8-2,0-2.8l0,0C24,7.3,23.5,7,23,7c-0.5,0-1,0.2-1.4,0.6L16,13.2l-5.5-5.5  c-0.8-0.8-2.1-0.8-2.8,0C7.3,8,7,8.5,7,9.1s0.2,1,0.6,1.4l5.5,5.5l-5.5,5.5C7.3,21.9,7,22.4,7,23c0,0.5,0.2,1,0.6,1.4  C8,24.8,8.5,25,9,25c0.5,0,1-0.2,1.4-0.6l5.5-5.5l5.5,5.5c0.8,0.8,2.1,0.8,2.8,0c0.8-0.8,0.8-2.1,0-2.8L18.8,16z"/></svg>
         </button>
         
         <p>Испытайте свою удачу! За 1000 кубков можно удвоить свой выигрыш, либо полностью проиграть.</p>
-        <button class="buy-box">1K <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /></button>
+        <button class="buy-box" data-price="1000">1K <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /></button>
     </div>
 
     <div id="lood">
-        <p></p>
+        <div id="lood-prize">
+            <img src="assets/icons/many_trophies.webp" alt="">
+            <span id="lood-result"></span>
+        </div>
     </div>
 
-    <div id="megabox-shop" class="shop">
+    <div id="megabox-shop" class="shop" style="--bg-color: linear-gradient(145deg, #ff3c70, #e62e5c)">
         <button id="modal-close" class="close-shop">
             <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" width="32px" height="32px"><path d="M18.8,16l5.5-5.5c0.8-0.8,0.8-2,0-2.8l0,0C24,7.3,23.5,7,23,7c-0.5,0-1,0.2-1.4,0.6L16,13.2l-5.5-5.5  c-0.8-0.8-2.1-0.8-2.8,0C7.3,8,7,8.5,7,9.1s0.2,1,0.6,1.4l5.5,5.5l-5.5,5.5C7.3,21.9,7,22.4,7,23c0,0.5,0.2,1,0.6,1.4  C8,24.8,8.5,25,9,25c0.5,0,1-0.2,1.4-0.6l5.5-5.5l5.5,5.5c0.8,0.8,2.1,0.8,2.8,0c0.8-0.8,0.8-2.1,0-2.8L18.8,16z"/></svg>
         </button>
@@ -243,13 +309,13 @@
                     <span class="brawler-stat">Leon</span>
                 </div>
                 <div class="brawler-back">
-                    <span>Скорость усиления:<br><b>Каждую минуту!</b></span>
+                    <span>Скорость усилителя:<br><b>Каждую минуту!</b></span>
                 </div>
             </div>
         </div>
 
 
-        <button id="buy-brawler" class="buy-box" data-price="10">10K <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /></button>
+        <button id="buy-brawler" class="buy-box" data-price="10000">10K <img src="assets/icons/trophy_icon.png" class="currency-icon" alt="трофей" /></button>
     </div>
 
     <div id="megabox-unlocking">
@@ -302,7 +368,7 @@
         <nav>
             <button data-section="shop-panel">🏪 Магазин</button>
             <button data-section="main-content" class="active">🪙 Кликер</button>
-            <button data-section="boxes-row">📦 Ящики</button>
+            <button data-section="boxes-container">📦 Ящики</button>
         </nav>
     </footer>
 

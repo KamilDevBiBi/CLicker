@@ -26,7 +26,7 @@
 
 body {
     display: grid;
-    height: 100vh;
+    height: 100%;
     /* Левая колонка занимает оставшееся место (1fr), правая под магазин (0.7fr от нее) */
     grid-template-columns: 1fr 0.7fr; 
     /* Верхняя строка под кликер (забирает максимум), нижняя под ящики (по размеру контента) */
@@ -39,6 +39,7 @@ body {
 
     font-family: 'Quicksand', 'Segoe UI', sans-serif;
     background: linear-gradient(145deg, #ffdde1 0%, #f9c9d6 100%);
+
     user-select: none; /* чтобы случайно не выделять текст */
     margin: 0;
 }
@@ -47,6 +48,7 @@ body {
     grid-area: clicker;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 #main-clicker{
@@ -55,6 +57,10 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    
+    position: relative;
+    overflow: hidden;
+    /* overflow-y: scroll; */
 }
 
 /* Шапка со счётом */
@@ -83,6 +89,7 @@ header {
     vertical-align: middle;
     margin-right: 4px;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+    user-select: none;
 }
 
 #score {
@@ -108,6 +115,7 @@ header {
     object-fit: contain; /* сохраняет пропорции */
     will-change: transform;
     background-color: #3d2632;
+    user-select: none;
 }
 
 /* Анимация при наведении (лёгкое парение) */
@@ -165,7 +173,6 @@ header {
 .rank-container {
     display: flex;
     align-items: center;
-    justify-content: c;
 }
 
 .rank-container img {
@@ -220,26 +227,16 @@ header {
 }
 
 /* Контейнер для частиц – чтобы они не выходили за пределы экрана */
-#particles-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1;
-    overflow: visible;
-}
+
 
 /* Каждая частица-трофей */
 .trophy-particle {
     position: absolute;
-    z-index: -10;
-    width: 100px;
-    height: 100px;
+    z-index: 1;
     pointer-events: none;
     opacity: 1;
     transition: none;
+    overflow: hidden;
 }
 
 /* Класс, который запускает анимацию */
@@ -306,10 +303,11 @@ header {
 
 /* Главный контейнер, который держит всю конструкцию */
 #boost-container {
-    position: fixed;
-    z-index: 100;
-    left: 20px;
-    top: 120px;
+    position: absolute;
+    width: min-content;
+    z-index: 3;
+    left: 10px;
+    top: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -319,8 +317,6 @@ header {
     font-size: 1rem;
     font-weight: 600;
     color: #4a2e3b;
-    width: 100px;
-    height: 30px;
     text-align: center;
 }
 /* ===== ТВОЙ КРУГЛЫЙ ТАЙМЕР ===== */
@@ -358,7 +354,7 @@ header {
 /* ===== МУЛЬТЯШНЫЙ ОГОНЬ СВЕРХУ ===== */
 .brawl-fire {
     position: absolute;
-    bottom: 30px;
+    bottom: 40px;
     width: 95px;
     height: 120px;
     background-color: #000; /* Это будет черная обводка огня */
@@ -437,8 +433,10 @@ header {
 /* ===== Панель магазина ===== */
 #shop-panel {
     grid-area: shop;
-    height: 100vh; 
-    overflow-y: auto;
+    height: 100vh;
+    overflow-y: scroll;
+
+    overscroll-behavior-y: contain; 
     display: flex;
     flex-direction: column;
 
@@ -449,8 +447,19 @@ header {
     box-shadow: 0 12px 35px rgba(190, 120, 130, 0.25),
                 inset 0 2px 0 rgba(255, 255, 255, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.5);
+
+}
+#shop-panel::-webkit-scrollbar {
+  width: 12px;
 }
 
+#shop-panel::-webkit-scrollbar-track {
+  background-color: rgb(228, 228, 228);
+}
+
+#shop-panel::-webkit-scrollbar-thumb {
+  background-color: #a3a3a3;
+}
 #shop-panel h2 {
     display: flex;
     align-items: center;
@@ -557,16 +566,97 @@ header {
     align-items: center;
 }
 
+.adv-container{
+    position: absolute;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+    max-width: 100px;
+    max-height: 144px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.adv-btn{
+    height: 100%;
+    border: 0;
+
+    background: linear-gradient(to bottom, #00bfff 0%, #007acc 100%);
+    color: #fff;
+    font-weight: 700;
+    border-radius: 0px 20px 20px 0px;
+    animation: pulseBtn 6s ease infinite;
+    animation-delay: 7s;
+}
+.adv-btn:first-child{
+    animation-delay: 6s;
+}
+.adv-btn.mobile{
+    display: none;
+}
+.adv-btn.hide{
+    display: none;
+}
+
+@keyframes pulseBtn {
+    0% {transform: scale(1);}
+    5% {transform: scale(1.05);}
+    10%{transform: scale(1.02);}
+    15%{transform: scale(1.05);}
+    20%{transform: scale(1);}
+}
+.adv-btn:hover{
+    cursor: pointer;
+    background: linear-gradient(to bottom, #00ace6 0%, #006fb9 100%);
+}
+.adv-btn:active{
+    transform: scale(0.92);
+    animation: none;
+}
+
+@keyframes shakeBtn {
+    0% {
+        transform: scale(1) rotate(0deg);
+    } 5% {
+        transform: scale(1.05) rotate(12deg);
+    } 10% {
+        transform: scale(1.02) rotate(-16deg);
+    }
+    15% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+.adv-background{
+    position: absolute;
+    right: -25px;
+    top: 0;
+    transform: translate(-50%, -50%);
+    background-color: #000;
+    width: 35px;
+    height: 31px;
+    border-radius: 8px;
+}
+.adv-background svg {
+    overflow: hidden;
+}
 
 /* ===== Секция ящиков ===== */
-#boxes-row{
+#boxes-container{
     grid-area: boxes;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-bottom: 10px; /* заменили margin на padding для красоты сетки */
+    padding-right: 10px;
 }
-
+#boxes-row{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .box-card {
     width: 170px;
     height: 200px;
@@ -598,6 +688,7 @@ header {
     display: block;
     width: 100%;
     object-fit: contain;
+    user-select: none;
 }
 
 .box-card .megabox-img{
@@ -616,6 +707,7 @@ header {
     letter-spacing: 0.04em;
 }
 
+
 /* ===== Магазин бравлеров (Grid) ===== */
 .shop {
     position: fixed;
@@ -632,7 +724,8 @@ header {
     
     max-height: 85vh;
     padding: 30px 16px 20px 16px;
-    background: linear-gradient(145deg, #ff3c70, #e62e5c);
+    
+    background: var(--bg-color);
     border-radius: 28px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
     z-index: 5; /* Поднимаем выше всего, включая магазин */
@@ -717,6 +810,40 @@ header {
     font-weight: 700;
     font-size: 1.1rem;
     color: #4a2e3b;
+}
+#lood-prize{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    width: 200px;
+    background-color: #0097c9;
+    padding: 20px 10px;
+    border: 8px solid #593445;
+}
+#lood-prize img{
+    width: 100%;
+    object-fit: cover;
+}
+#lood-prize span{
+    position: absolute;
+    background-color: #fff;
+    width: max-content;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 60%);
+    font-weight: 700;
+    font-size: 2rem;
+    color: #000000;
+    padding: 5px 10px;
+    border-radius: 8px;
+}
+#lood-prize span.waste{
+    color: #790012;
+}
+#lood-prize span.bonus{
+    color: #00c900;
 }
 /* Карточка бравлера */
 .brawler-card {
@@ -1286,19 +1413,73 @@ header {
         height: auto;
         min-height: 70vh;
     }
+    #coin {
+        width: 200px;
+        height: 200px;
+    }
+
+    #score {
+        font-size: 2.5rem;
+    }
+
+    #boost-timer{
+        width: 60px;
+        height: 60px;
+        font-size: 1.1rem;
+    }
+    .brawl-fire{
+        width: 75px;
+        height: 90px;
+    }
+    .hint{
+        font-size: 0.96rem;
+    }
+
+    .progress-bar-track{
+        height: 25px;
+        max-width: 20px;
+    }
+    .rank-container img{
+        width: 60px;
+        height: 60px;
+    }
+
+    .free-megabox-adv:not(.mobile){
+        display: none;
+    }
+    .adv-btn.mobile{
+        display: block;
+        width: 100%;
+        max-width: 140px;
+        max-height: 50px;
+
+        border-radius: 8px;
+
+        animation: shakeBtn 6s ease infinite;
+        animation-delay: 6s;
+    }
+    .adv-btn.mobile.hide{
+        display: none;
+    }
+    .adv-container{
+        max-height: 60px;
+    }
 
     #shop-panel {
         display: none;
+        max-height: 80vh;
+
 
         height: auto;
         width: 100%;
-        border-radius: 28px 28px 0 0;
+        border-radius: 0px 0px 28px 28px;
         flex: none;
         padding: 16px 14px;
-        overflow-y: auto;
+
     }
-    #boxes-row{
+    #boxes-container{
         display: none;
+        flex-direction: column;
         width: 100%;
         height: 100%;
     }
@@ -1330,29 +1511,6 @@ header {
         padding: 6px 10px;
     }
 
-    #coin {
-        width: 200px;
-        height: 200px;
-    }
-
-    #score {
-        font-size: 2.5rem;
-    }
-
-    #boost-timer{
-        width: 50px;
-        height: 50px;
-        font-size: 1rem;
-    }
-    .brawl-fire{
-        width: 75px;
-        height: 90px;
-    }
-    .hint{
-        font-size: 0.96rem;
-    }
-
-
     #brawler-desc{
         font-size: 0.9rem;
     }
@@ -1363,27 +1521,30 @@ header {
 }
 
 @media (max-width: 480px) {
-    #coin {
-        width: 165px;
-        height: 165px;
-    }
-
-    #score {
-        font-size: 2rem;
-    }
-
     header {
         padding: 0.1rem 0.8rem;
         min-width: 90px;
         margin-bottom: 15px;
+    }
+    #score {
+        font-size: 2rem;
+    }
+    #coin {
+        width: 175px;
+        height: 175px;
     }
 
     .currency-icon.header {
         width: 2.5rem;
         height: 2.2rem;
     }
-    #boost-container{
-        left: 5px;
+    #boost-timer{
+        width: 50px;
+        height: 50px;
+        font-size: 1rem;
+    }
+    .adv-container{
+        top: 450px;
     }
 
     .box-card {
@@ -1420,6 +1581,11 @@ header {
         padding: 8px 10px;
         margin-bottom: 6px;
         border-radius: 14px;
+    }
+
+    .shop-item.closed::before{
+        box-shadow: inset 0 0 0 1px #230010;
+        outline: 2px solid #230010;
     }
 
     .item-name {

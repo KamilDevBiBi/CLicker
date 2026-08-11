@@ -19,13 +19,16 @@ async function loadSound(name, url) {
 
 // Список звуков: имя → путь
 const soundsToLoad = {
-    clicker: 'assets/sounds/coin-click.mp3',
+    clicker: 'assets/sounds/clicker.mp3',
+    clicker2: 'assets/sounds/clicker2.mp3',
     buy: 'assets/sounds/buy-item.mp3',
     box_open: 'assets/sounds/box_open.ogg',
     menu_click: 'assets/sounds/menu_click.ogg',
     brawler_card: 'assets/sounds/brawler_card.ogg',
     new_level: 'assets/sounds/new_level.ogg',
 };
+
+const CLICKER_SOUNDS = ['clicker', 'clicker2']
 
 // Загружаем все параллельно
 Promise.all(
@@ -69,10 +72,13 @@ let ysdk = null;
 /** @type {import('ysdk').Player | null} */
 let player = null;
 
+let lang = null;
+
 async function initSDK() {
     try {
         ysdk = await YaGames.init();
         player = await ysdk.getPlayer();
+        lang = ysdk.environment.i18n.lang
 
         await loadPlayerProgress();
     } catch {
@@ -92,20 +98,16 @@ async function loadPlayerProgress(){
     const localJSON = localStorage.getItem("brawl_stars_clicker_save");
     const localData = JSON.parse(localJSON)
 
-    if (cloudData){
+    playerProgress = localData
+    if (!localData){
         playerProgress = cloudData;
-    } else if (localData){
-        playerProgress = localData;
     }
-
-    console.log(playerProgress)
 
     applyLoadedData();
 }
 
 function saveGame() { 
-    try { 
-        console.log(playerProgress)
+    try {
         const progressString = JSON.stringify(playerProgress); 
         localStorage.setItem("brawl_stars_clicker_save", progressString); 
     } catch (error) { 
@@ -123,16 +125,15 @@ function loadLocalStorage(){
     applyLoadedData();
 }
 
-async function SDKsaveGame(){
-    const {unlockedBrawlers, ...numericData} = playerProgress;
-    await player.setStats(numericData).then(()=>{console.log(playerProgress)});
-}
-
 const CLICKS_PER_LEVEL_STEP = 50;
 let currentLevel = 1;
 const levelImg = document.getElementById("level-img")
 const shopItems = document.querySelectorAll('.shop-item');
 let autoInterval = null;
+const timerValue = document.getElementById("timer-value");
+let delayTime = 120;
+const advMegaboxBtn = document.querySelectorAll(".free-megabox-adv")
+const advTrophyBtn = document.getElementById("free-trophy-adv")
 const brawlers = ["shelly", "el-primo", "bibi", "mortis", "leon"]
 const clicker = document.getElementById("coin");
 const trophyCount = document.getElementById('score');
@@ -143,6 +144,50 @@ function applyLoadedData(){
     if (playerProgress.autoclick > 0){
         autoInterval = setInterval(addAutoTrophy, 1000);
     }
+    if (playerProgress.unlockedBrawlers.includes("leon")){
+        delayTime = 60;
+        timerValue.textContent = "1:00"
+        timerValue.dataset.item = 60;
+    }
+
+    if (!ysdk || !player){
+        advMegaboxBtn.forEach((btn) => {
+            btn.classList.add("hide")
+        })
+        advTrophyBtn.classList.add("hide")
+    } else {
+        advMegaboxBtn.forEach((btn) => {
+            btn.addEventListener("click", function(){
+                ysdk.adv.showRewardedVideo({
+                    callbacks: {
+                        onOpen: () => {audioContext.suspend()},
+                        onRewarded: () => {megaboxUnlocking.classList.add("active")},
+                        onClose: () => {audioContext.resume()},
+                        onError: () => {audioContext.resume()}
+                    }
+                })
+            })
+        })
+        advTrophyBtn.addEventListener("click", function(){
+            ysdk.adv.showRewardedVideo({
+                callbacks: {
+                    onOpen: () => {audioContext.suspend()},
+                    onRewarded: () => {
+                        loodContainer.classList.add("active")
+                        playSound('buy')
+
+                        loodInfo.textContent = `+ ${to_coroche(playerProgress.score)}`
+                        loodInfo.classList.remove("waste")
+                        loodInfo.classList.add("bonus")
+                        addTrophy(playerProgress.score)
+                    },
+                    onClose: () => {audioContext.resume()},
+                    onError: () => {audioContext.resume()}
+                }
+            })
+        })
+    }
+
     for (let i = 0; i <= playerProgress.lastUpgrade; i++){
         shopItems[i].classList.remove("closed")
     }
@@ -158,8 +203,6 @@ function applyLoadedData(){
         }
     }
 }
-
-initSDK();
 
 function calculateLevelData(clicks) {
     let level = 1;
@@ -218,7 +261,7 @@ function checkShopButtons() {
 
 function addAutoTrophy() {
     playerProgress.score += playerProgress.autoclick;
-    // saveGame();
+    saveGame();
 
     trophyCount.textContent = to_coroche(playerProgress.score);
     checkShopButtons();
@@ -308,7 +351,7 @@ clicker.addEventListener("click", function(e) {
 
     addTrophy(boostedClick)
     
-    playSound("clicker")
+    playSound(CLICKER_SOUNDS[Math.floor(Math.random() * 2)])
     
     createTrophyBurst(centerX, centerY);
     createFloatingText(e.clientX, e.clientY, `+${to_coroche(boostedClick)}`, textClass);
@@ -322,12 +365,12 @@ clicker.addEventListener("click", function(e) {
 });
 
 
-const particlesContainer = document.getElementById('particles-container');
+const particlesContainer = document.getElementById('main-clicker');
 const trophy_IMG = 'assets/icons/trophy_icon.png';
 
 function createTrophyBurst(x, y) {
     const count = 4; // количество частиц
-    const spread = 150; // разлёт в пикселях
+    const spread = 100; // разлёт в пикселях
 
     for (let i = 0; i < count; i++) {
         // Создаём элемент частицы
@@ -339,7 +382,7 @@ function createTrophyBurst(x, y) {
         particle.style.left = (x - 20) + 'px';   // смещаем на половину ширины
         particle.style.top = (y - 20) + 'px';
 
-        const size = 30 + Math.random() * 60; 
+        const size = Math.random() * 40 + 40; 
         particle.style.width = size + 'px';
         particle.style.height = size + 'px';
         
@@ -388,8 +431,6 @@ function createFloatingText(x, y, text, style) {
 }
 
 const boostContainer = document.getElementById("boost-container");
-const timerValue = document.getElementById("timer-value");
-const delayTime = 120
 let trophyRainInt = null;
 let updateBoostTimer = setInterval(() => {
     let newTimer = Number(timerValue.dataset.item) - 1;
@@ -402,7 +443,7 @@ let updateBoostTimer = setInterval(() => {
             newTimer = 10;
             trophyRainInt = setInterval(trophyRain, 300);
         } else {
-            newTimer = 120;
+            newTimer = delayTime;
             clearInterval(trophyRainInt)
             trophyRainInt = null;
         }
@@ -516,7 +557,7 @@ brawlerCards.forEach(card => {
 
 // Открытие обычного ящика
 const loodContainer = document.getElementById("lood")
-const loodInfo = loodContainer.querySelector("p")
+const loodInfo = document.getElementById("lood-result")
 buyBoxes[0].addEventListener('click', function(e){
     if (parseInt(this.dataset.price) > playerProgress.score){return; }
     loodContainer.classList.add("active")
@@ -524,10 +565,14 @@ buyBoxes[0].addEventListener('click', function(e){
     playSound("buy")
 
     if (Math.random() < 0.5){
-        loodInfo.textContent = "Неудача! -1000 кубков"
+        loodInfo.textContent = "-1000"
+        loodInfo.classList.remove("bonus")
+        loodInfo.classList.add("waste")
         addTrophy(-1000)
     } else{
-        loodInfo.textContent = "Успех! +2000 кубков"
+        loodInfo.textContent = "+2000"
+        loodInfo.classList.remove("waste")
+        loodInfo.classList.add("bonus")
         addTrophy(1000)
     }
 })
@@ -604,7 +649,7 @@ function resetAnimation(e){
     unlockingModal.classList.remove("active");
     brawlerWrapper.classList.remove("unlocked")
     descriptionDiv.classList.remove("unlocked")
-    megaboxImg.setAttribute("src", "assets/megabox.png")
+    megaboxImg.setAttribute("src", "assets/megabox.webp")
     megaboxImg.classList.add("bouncing");
     unlockingVideo.classList.remove("hidden");
 
@@ -637,7 +682,7 @@ function to_coroche(n){
     
     const shortValue = num / Math.pow(1000, i);
     
-    const finalNumber = Math.floor(shortValue * 10) / 10;
+    const finalNumber = Math.floor(shortValue * 100) / 100;
     i = Math.min(i, suffixes.length)
 
     return sign + finalNumber + suffixes[i];
@@ -666,15 +711,13 @@ navButtons.forEach(btn => {
 });
 
 function switchSection(section) {
-    // Скрываем все секции
     const flyingTrophies = [...document.querySelectorAll(".rainy"), ...document.querySelectorAll(".trophy-particle")];
-    
-    // Насильно удаляем их из памяти, чтобы они не зависали в display:none
     flyingTrophies.forEach(trophy => trophy.remove());
 
     document.querySelectorAll('.section').forEach(el => el.style.display = 'none');
     
     // Показываем нужную
+    console.log(section)
     const target = document.getElementById(section);
     if (target) target.style.display = 'flex';
 }
