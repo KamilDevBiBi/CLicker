@@ -19,7 +19,9 @@
                 <img src="assets/icons/trophy_icon.png" class="currency-icon header" alt="трофей" draggable="false"/>
                 <span id="score">0</span>
             </header>
-            <img src="assets/clicker-coin.webp" alt="Монета Brawl Stars" id="coin" draggable="false">
+
+            <div id="coin"></div>
+
             <div id="progress">
                 <div class="level-info-row">
                     <span class="rank-container">
@@ -62,7 +64,6 @@
                 <div id="boost-timer">
                     <span id="timer-value" data-item="120">2:00</span>
                 </div>
-                <span class="hint">Усилитель кубков</span>
             </div>
         </div>
     </div>
@@ -94,7 +95,6 @@
     <div id="shop-panel" class="section">
         <h2>Магазин <img src="assets/icons/shop_icon.png" alt="" id="shop-icon"> </h2>
 
-        <!-- 1. Автоклик (+1/сек) — Дешевая основа. Игрок купит его десятки раз -->
         <div class="shop-item" data-item="autoclick-1" data-price="20" draggable="false">
             <div class="item-content">
                 <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
@@ -108,7 +108,6 @@
             </span>
         </div>
 
-        <!-- 2. Курсор (+1 к клику) — Покупается, чтобы ручной клик не отставал от автоклика -->
         <div class="shop-item closed" data-item="cursor-1" data-price="150">
             <div class="item-content">
                 <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
@@ -122,7 +121,6 @@
             </span>
         </div>
 
-        <!-- 3. Кристаллический автоклик (+5/сек) — Окупается, когда у игрока уже высокий пассивный доход -->
         <div class="shop-item closed" data-item="autoclick-25" data-price="2000">
             <div class="item-content">
                 <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
@@ -136,7 +134,6 @@
             </span>
         </div>
 
-        <!-- 4. Кристаллический курсор (+3 к клику) — Серьезный шаг вперед -->
         <div class="shop-item closed" data-item="cursor-50" data-price="15000">
             <div class="item-content">
                 <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
@@ -150,7 +147,6 @@
             </span>
         </div>
 
-        <!-- 5. Гемовый автоклик (+10/сек) — Начало космических масштабов -->
         <div class="shop-item closed" data-item="autoclick-2000" data-price="50000">
             <div class="item-content">
                 <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
@@ -164,7 +160,6 @@
             </span>
         </div>
 
-        <!-- 6. Гемовый курсор (+5 к клику) — Миллионная лига -->
         <div class="shop-item closed" data-item="cursor-5000" data-price="200000">
             <div class="item-content">
                 <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
@@ -178,7 +173,6 @@
             </span>
         </div>
 
-        <!-- 7. Блинговый автоклик (+20/сек) — Огромная цена под ураганный автоклик игрока -->
         <div class="shop-item closed" data-item="autoclick-50000" data-price="1000000">
             <div class="item-content">
                 <img src="assets/icons/crystal_icon.png" class="item-icon" alt="power"/>
@@ -192,7 +186,6 @@
             </span>
         </div>
 
-        <!-- 8. Блинговый курсор (+10 к клику) — Ультимативная финальная цель -->
         <div class="shop-item closed" data-item="cursor-100000" data-price="50000000">
             <div class="item-content">
                 <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
@@ -219,7 +212,6 @@
             </span>
         </div>
 
-        <!-- 8. Блинговый курсор (+10 к клику) — Ультимативная финальная цель -->
         <div class="shop-item closed" data-item="cursor-1000000" data-price="1000000000">
             <div class="item-content">
                 <img src="assets/icons/icon_gems.png" class="item-icon" alt="cursor"/>
@@ -258,55 +250,50 @@
         </button>
 
         <div id="brawlers-catalog">
-            <!-- Шелли -->
-            <div class="brawler-card" data-name="shelly">
+            <div class="brawler-card" data-name="Шелли">
                 <div class="brawler-front">
                     <img src="assets/portraits/shelly_portrait.png" alt="" class="brawler-img" draggable="false">
-                    <span class="brawler-stat">Shelly</span>
+                    <span class="brawler-stat">Шелли</span>
                 </div>
                 <div class="brawler-back">
                     <span>Каждый 10-й клик:<br><b>+10 к силе</b></span>
                 </div>
             </div>
             
-            <!-- Эль Примо -->
-            <div class="brawler-card" data-name="el-primo">
+            <div class="brawler-card" data-name="Эль-примо">
                 <div class="brawler-front">
                     <img src="assets/portraits/el-primo_portrait.png" alt="" class="brawler-img" draggable="false">
-                    <span class="brawler-stat">El Primo</span>
+                    <span class="brawler-stat">Эль-примо</span>
+                </div>
+                <div class="brawler-back">
+                    <span>Награда за уровень:<br><b>Удвоена (x2)</b></span>
+                </div>
+            </div>
+            
+            <div class="brawler-card" data-name="Биби">
+                <div class="brawler-front">
+                    <img src="assets/portraits/bibi_portrait.png" alt="" class="brawler-img" draggable="false">
+                    <span class="brawler-stat">Биби</span>
                 </div>
                 <div class="brawler-back">
                     <span>Скорость уровня:<br><b>Удвоена (x2)</b></span>
                 </div>
             </div>
             
-            <!-- Биби -->
-            <div class="brawler-card" data-name="bibi">
-                <div class="brawler-front">
-                    <img src="assets/portraits/bibi_portrait.png" alt="" class="brawler-img" draggable="false">
-                    <span class="brawler-stat">Bibi</span>
-                </div>
-                <div class="brawler-back">
-                    <span>Шанс 15% на:<br><b>Крит клик (x5)</b></span>
-                </div>
-            </div>
-            
-            <!-- Мортис -->
-            <div class="brawler-card" data-name="mortis">
+            <div class="brawler-card" data-name="Мортис">
                 <div class="brawler-front">
                     <img src="assets/portraits/mortis_portrait.png" alt="" class="brawler-img" draggable="false">
-                    <span class="brawler-stat">Mortis</span>
+                    <span class="brawler-stat">Мортис</span>
                 </div>
                 <div class="brawler-back">
                     <span>Кэшбек в магазине:<br><b>Возврат 10%</b></span>
                 </div>
             </div>
             
-            <!-- Леон -->
-            <div class="brawler-card" data-name="leon">
+            <div class="brawler-card" data-name="Леон">
                 <div class="brawler-front">
                     <img src="assets/portraits/leon_portrait.png" alt="" class="brawler-img" draggable="false">
-                    <span class="brawler-stat">Leon</span>
+                    <span class="brawler-stat">Леон</span>
                 </div>
                 <div class="brawler-back">
                     <span>Скорость усилителя:<br><b>Каждую минуту!</b></span>
@@ -359,7 +346,7 @@
             </div>
             
             <div class="brawler-wrapper">
-                <img src="assets/brawler-models/shelly_model.png" alt="Shelly" class="modal-brawler-image appear">
+                <img src="" alt="Бравлер" class="modal-brawler-image appear">
             </div>
         </div>
     </div>
@@ -371,6 +358,5 @@
             <button data-section="boxes-container">📦 Ящики</button>
         </nav>
     </footer>
-
 </body>
 </html>
